@@ -7,16 +7,16 @@
       "RelativeMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|solutionrelative:blivehelper\\viewmodels\\windows\\mainwindowviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|h:\\code\\c#\\blivesettings\\blivehelper\\utils\\blivesettingconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|solutionrelative:blivehelper\\utils\\blivesettingconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|h:\\code\\c#\\blivesettings\\blivehelper\\utils\\bliveapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|solutionrelative:blivehelper\\utils\\bliveapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|h:\\code\\c#\\blivesettings\\blivehelper\\utils\\bliveapimodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|solutionrelative:blivehelper\\utils\\bliveapimodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|h:\\code\\c#\\blivesettings\\blivehelper\\utils\\bliveapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|solutionrelative:blivehelper\\utils\\bliveapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|h:\\code\\c#\\blivesettings\\blivehelper\\utils\\blivesettingconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|solutionrelative:blivehelper\\utils\\blivesettingconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{317FCDAA-4963-451A-86B5-C9C92604E1C0}|BliveHelper\\BliveHelper.csproj|h:\\code\\c#\\blivesettings\\blivehelper\\views\\windows\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -60,25 +60,27 @@
               "RelativeDocumentMoniker": "BliveHelper\\Utils\\BliveAPIModels.cs",
               "ToolTip": "H:\\Code\\C#\\BliveSettings\\BliveHelper\\Utils\\BliveAPIModels.cs",
               "RelativeToolTip": "BliveHelper\\Utils\\BliveAPIModels.cs",
-              "ViewState": "AgIAAIkAAAAAAAAAAIAwwKsAAAAhAAAAAAAAAA==",
+              "ViewState": "AgIAAMQAAAAAAAAAAEBAwN8AAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-22T10:21:26.586Z"
+              "WhenOpened": "2025-05-22T10:21:26.586Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "BliveAPI.cs",
               "DocumentMoniker": "H:\\Code\\C#\\BliveSettings\\BliveHelper\\Utils\\BliveAPI.cs",
               "RelativeDocumentMoniker": "BliveHelper\\Utils\\BliveAPI.cs",
               "ToolTip": "H:\\Code\\C#\\BliveSettings\\BliveHelper\\Utils\\BliveAPI.cs",
               "RelativeToolTip": "BliveHelper\\Utils\\BliveAPI.cs",
-              "ViewState": "AgIAAIwAAAAAAAAAAAAAwJwAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAALsAAAAAAAAAAAAywOUAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-21T14:04:24.55Z"
+              "WhenOpened": "2025-05-21T14:04:24.55Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "BliveSettingConfig.cs",
               "DocumentMoniker": "H:\\Code\\C#\\BliveSettings\\BliveHelper\\Utils\\BliveSettingConfig.cs",
               "RelativeDocumentMoniker": "BliveHelper\\Utils\\BliveSettingConfig.cs",
@@ -86,7 +88,8 @@
               "RelativeToolTip": "BliveHelper\\Utils\\BliveSettingConfig.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-21T12:11:03.553Z"
+              "WhenOpened": "2025-05-21T12:11:03.553Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -96,7 +99,7 @@
               "RelativeDocumentMoniker": "BliveHelper\\ViewModels\\Windows\\MainWindowViewModel.cs",
               "ToolTip": "H:\\Code\\C#\\BliveSettings\\BliveHelper\\ViewModels\\Windows\\MainWindowViewModel.cs",
               "RelativeToolTip": "BliveHelper\\ViewModels\\Windows\\MainWindowViewModel.cs",
-              "ViewState": "AgIAABkAAAAAAAAAAAAwwCUAAABDAAAAAAAAAA==",
+              "ViewState": "AgIAADIAAAAAAAAAAAAAwEkAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-21T09:53:16.197Z",
               "EditorCaption": ""

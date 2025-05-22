@@ -210,4 +210,20 @@ namespace BliveHelper.Utils
         [JsonPropertyName("provider")]
         public string Provider { get; set; } = string.Empty;
     }
+
+    internal class BliveOperationOnBroadcastCode
+    {
+        [JsonPropertyName("action")]
+        public int Action { get; set; } = 1;
+        [JsonPropertyName("csrf_token")]
+        public string CsrfToken { get; set; } = string.Empty;
+        [JsonPropertyName("csrf")]
+        public string Csrf { get; set; } = string.Empty;
+    }
+
+    internal class BliveOperationOnBroadcastCodeResponse
+    {
+        [JsonPropertyName("code")]
+        public string Code { get; set; } = string.Empty;
+    }
 }

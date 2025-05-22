@@ -1,4 +1,5 @@
 ﻿using QRCoder;
+using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
@@ -202,6 +203,18 @@ namespace BliveHelper.Utils
             var response = await Client.PostAsync("https://api.live.bilibili.com/room/v1/Room/stopLive", ToUrlEncodeed(requestData));
             var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveStopResponse>>();
             return data?.Data;
+        }
+
+        public async Task<string> GetOperationOnBroadcastCode()
+        {
+            var requestData = new BliveOperationOnBroadcastCode()
+            {
+                Csrf = CSRF,
+                CsrfToken = CSRF
+            };
+            var response = await Client.PostAsync("https://api.live.bilibili.com/xlive/open-platform/v1/common/operationOnBroadcastCode", ToUrlEncodeed(requestData));
+            var data =await response.Content.ReadFromJsonAsync<BliveResponse<BliveOperationOnBroadcastCodeResponse>>();
+            return data?.Data?.Code ?? string.Empty;
         }
 
         private string GetCookie(string name)

@@ -23,3 +23,4 @@ H:\Code\C#\BliveSettings\BliveHelper\obj\Debug\net8.0-windows\win-x64\refint\Bli
 H:\Code\C#\BliveSettings\BliveHelper\obj\Debug\net8.0-windows\win-x64\BliveHelper.pdb
 H:\Code\C#\BliveSettings\BliveHelper\obj\Debug\net8.0-windows\win-x64\BliveHelper.genruntimeconfig.cache
 H:\Code\C#\BliveSettings\BliveHelper\obj\Debug\net8.0-windows\win-x64\ref\BliveHelper.dll
+H:\Code\C#\BliveSettings\BliveHelper\obj\Debug\net8.0-windows\win-x64\BliveHelper.sourcelink.json

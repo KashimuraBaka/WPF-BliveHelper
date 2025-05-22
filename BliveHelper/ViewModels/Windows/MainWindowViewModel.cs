@@ -28,6 +28,7 @@ namespace BliveHelper.ViewModels.Windows
         // 推流码
         [ObservableProperty] private string streamServerUrl = string.Empty;
         [ObservableProperty] private string streamCode = string.Empty;
+        [ObservableProperty] private string broadcastCode = string.Empty;
 
         public BliveSettingConfig Config { get; } = new("config.json");
         public ObservableCollection<string> LiveAreas { get; } = [];
@@ -69,6 +70,7 @@ namespace BliveHelper.ViewModels.Windows
             {
                 StreamServerUrl = string.Empty;
                 StreamCode = string.Empty;
+                BroadcastCode = string.Empty;
             }
         }
 
@@ -245,13 +247,22 @@ namespace BliveHelper.ViewModels.Windows
         {
             // 设置直播间
             var rtmp = await BliveAPI.StartLive(RoomId, Title, GameAreaID);
-            if (rtmp is not null && !string.IsNullOrEmpty(rtmp.ServerUrl))
+            if (rtmp is null || string.IsNullOrEmpty(rtmp.ServerUrl))
             {
-                StreamServerUrl = rtmp.ServerUrl;
-                StreamCode = rtmp.Code;
-                return true;
+                return false;
             }
-            return false;
+            StreamServerUrl = rtmp.ServerUrl;
+            StreamCode = rtmp.Code;
+
+            // 获取身份码
+            var broadcastCode = await BliveAPI.GetOperationOnBroadcastCode();
+            if (string.IsNullOrEmpty(broadcastCode))
+            {
+                return false;
+            }
+            BroadcastCode = broadcastCode;
+
+            return true;
         }
     }
 }

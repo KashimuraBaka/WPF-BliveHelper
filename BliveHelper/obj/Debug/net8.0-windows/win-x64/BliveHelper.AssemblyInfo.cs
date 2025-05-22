@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BliveHelper")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5842810fa9b014577bf99a121b0372e02802a97b")]
 [assembly: System.Reflection.AssemblyProductAttribute("BliveHelper")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BliveHelper")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

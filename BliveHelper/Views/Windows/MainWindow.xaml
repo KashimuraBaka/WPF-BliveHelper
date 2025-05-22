@@ -66,6 +66,10 @@
                     <TextBlock Text="推流码" />
                     <TextBox IsReadOnly="True" Text="{Binding StreamCode}" />
                 </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="身份码" />
+                    <TextBox IsReadOnly="True" Text="{Binding BroadcastCode}" />
+                </DockPanel>
             </StackPanel>
         </StackPanel>
         <Grid Grid.Row="1" Grid.Column="0">
