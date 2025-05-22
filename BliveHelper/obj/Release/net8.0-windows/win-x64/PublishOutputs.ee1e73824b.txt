@@ -1,0 +1,2 @@
+H:\Code\C#\BliveStreamCode\BliveStreamCode\bin\Release\net8.0-windows\publish\BliveStreamCode.pdb
+H:\Code\C#\BliveStreamCode\BliveStreamCode\bin\Release\net8.0-windows\publish\BliveStreamCode.exe

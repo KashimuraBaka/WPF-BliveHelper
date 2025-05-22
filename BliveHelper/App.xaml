@@ -1,0 +1,9 @@
+﻿<Application
+    x:Class="BliveHelper.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Window="clr-namespace:BliveHelper.Views.Windows"
+    xmlns:local="clr-namespace:BliveHelper"
+    StartupUri="Views/Windows/MainWindow.xaml">
+    <Application.Resources />
+</Application>
