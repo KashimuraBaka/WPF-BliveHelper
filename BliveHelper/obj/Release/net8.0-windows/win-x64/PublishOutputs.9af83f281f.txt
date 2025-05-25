@@ -1,2 +1,0 @@
-H:\Code\C#\BliveHelper\BliveHelper\bin\Release\net8.0-windows\publish\BliveHelper.pdb
-H:\Code\C#\BliveHelper\BliveHelper\bin\Release\net8.0-windows\publish\BliveHelper.exe
