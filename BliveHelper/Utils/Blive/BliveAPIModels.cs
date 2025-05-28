@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.IO;
+using System.Text.Json.Serialization;
 
 namespace BliveHelper.Utils.Blive
 {
@@ -226,4 +227,50 @@ namespace BliveHelper.Utils.Blive
         [JsonPropertyName("code")]
         public string Code { get; set; } = string.Empty;
     }
+
+    internal class BliveSendMessageRequest
+    {
+        [JsonPropertyName("csrf")]
+        public string Csrf { get; set; } = string.Empty;
+        [JsonPropertyName("csrf_token")]
+        public string CsrfToken { get; set; } = string.Empty;
+        [JsonPropertyName("roomid")]
+        public int RoomId { get; set; }
+        [JsonPropertyName("msg")]
+        public string Msg { get; set; } = string.Empty;
+        [JsonPropertyName("rnd")]
+        public long Rnd { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        [JsonPropertyName("fontsize")]
+        public int FontSize { get; set; } = 25;
+        [JsonPropertyName("color")]
+        public int Color { get; set; } = 16777215;
+        [JsonPropertyName("mode")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int Mode { get; set; } = 1;
+        [JsonPropertyName("bubble")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int Bubble { get; set; }
+        [JsonPropertyName("room_type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int RoomType { get; set; } 
+        [JsonPropertyName("jumpfrom")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int JumpFrom { get; set; } 
+        [JsonPropertyName("reply_mid")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int ReplyMid { get; set; }
+        [JsonPropertyName("reply_attr")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int ReplyAttr { get; set; } 
+        [JsonPropertyName("reply_uname")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ReplyUname { get; set; }
+        [JsonPropertyName("replay_dmid")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? ReplayDmid { get; set; } 
+        [JsonPropertyName("statistics")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Statistics { get; set; }
+    }
+
 }

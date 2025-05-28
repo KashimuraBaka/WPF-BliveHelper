@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Windows.Media.Imaging;
 
@@ -229,6 +230,19 @@ namespace BliveHelper.Utils.Blive
                 requestData
             );
             return response?.Data?.Code ?? string.Empty;
+        }
+
+        public async Task<bool> SendDanmu(int roomId, string message)
+        {
+            var requestData = new BliveSendMessageRequest()
+            {
+                RoomId = roomId,
+                Csrf = CSRF,
+                CsrfToken = CSRF,
+                Msg = message
+            };
+            var response = await PostFormUrlEncoded<JsonObject>("https://api.live.bilibili.com/msg/send", requestData);
+            return response is not null && response.Code == 0;
         }
 
         private string GetCookie(string name)
