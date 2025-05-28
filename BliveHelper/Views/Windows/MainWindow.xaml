@@ -128,7 +128,7 @@
                         <ColumnDefinition />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Width="Auto" Text="弹幕内容" />
+                    <TextBlock Grid.Column="0" Width="Auto" VerticalAlignment="Center" Text="弹幕内容" />
                     <TextBox Grid.Column="1" IsEnabled="{Binding DanmuEnable}" Text="{Binding DanmuMessage}" />
                     <Button
                         Grid.Column="2"
