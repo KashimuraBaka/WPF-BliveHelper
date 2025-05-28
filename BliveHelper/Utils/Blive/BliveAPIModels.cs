@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BliveHelper.Utils
+namespace BliveHelper.Utils.Blive
 {
     enum BliveState : byte
     {

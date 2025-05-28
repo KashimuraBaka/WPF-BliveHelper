@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Windows.Media.Imaging;
 
-namespace BliveHelper.Utils
+namespace BliveHelper.Utils.Blive
 {
     internal class BliveAPI : IDisposable
     {
@@ -66,14 +66,33 @@ namespace BliveHelper.Utils
             Client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36");
         }
 
+        private async Task<BliveResponse<T>?> Get<T>(string url)
+        {
+            try
+            {
+                var response = await Client.GetAsync(url);
+                return await response.Content.ReadFromJsonAsync<BliveResponse<T>>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching data from {url}: {ex.Message}");
+                return default;
+            }
+        }
+
+        private async Task<BliveResponse<T>?> PostFormUrlEncoded<T>(string url, object data)
+        {
+            var response = await Client.PostAsync(url, ToUrlEncodeed(data));
+            return await response.Content.ReadFromJsonAsync<BliveResponse<T>>();
+        }
+
         /// <summary>
         /// 访问Bilibili服务器检查二维码扫描后的登录状态
         /// </summary>
         public async Task<BliveQRCodeResponse?> GetLoginQRCode()
         {
-            var response = await Client.GetAsync("https://passport.bilibili.com/x/passport-login/web/qrcode/generate");
-            var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveQRCodeResponse>>();
-            return data?.Data;
+            var response = await Get<BliveQRCodeResponse>("https://passport.bilibili.com/x/passport-login/web/qrcode/generate");
+            return response?.Data;
         }
 
         /// <summary>
@@ -114,9 +133,8 @@ namespace BliveHelper.Utils
         /// <returns></returns>
         public async Task<BliveQRCodePollResponse?> PollLoginQRCode(string key)
         {
-            var response = await Client.GetAsync($"https://passport.bilibili.com/x/passport-login/web/qrcode/poll?qrcode_key={key}");
-            var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveQRCodePollResponse>>();
-            return data?.Data ?? default;
+            var response = await Get<BliveQRCodePollResponse>($"https://passport.bilibili.com/x/passport-login/web/qrcode/poll?qrcode_key={key}");
+            return response?.Data ?? default;
         }
 
         /// <summary>
@@ -126,9 +144,8 @@ namespace BliveHelper.Utils
         /// <returns></returns>
         public async Task<string> GetRoomID(string userid)
         {
-            var response = await Client.GetAsync($"https://api.live.bilibili.com/room/v2/Room/room_id_by_uid?uid={userid}");
-            var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveRoomIDResponse>>();
-            return data?.Data?.RoomId.ToString() ?? string.Empty;
+            var response = await Get<BliveRoomIDResponse>($"https://api.live.bilibili.com/room/v2/Room/room_id_by_uid?uid={userid}");
+            return response?.Data?.RoomId.ToString() ?? string.Empty;
         }
 
         /// <summary>
@@ -137,9 +154,8 @@ namespace BliveHelper.Utils
         /// <returns></returns>
         public async Task<BliveArea[]> GetAreas()
         {
-            var response = await Client.GetAsync("https://api.live.bilibili.com/room/v1/Area/getList?show_pinyin=1");
-            var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveArea[]>>();
-            return data?.Data ?? [];
+            var response = await Get<BliveArea[]>("https://api.live.bilibili.com/room/v1/Area/getList?show_pinyin=1");
+            return response?.Data ?? [];
         }
 
         /// <summary>
@@ -148,9 +164,8 @@ namespace BliveHelper.Utils
         /// <returns></returns>
         public async Task<BliveInfo?> GetInfo()
         {
-            var response = await Client.GetAsync("https://api.live.bilibili.com/xlive/app-blink/v1/room/GetInfo?platform=android_link");
-            var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveInfo>>();
-            return data?.Data;
+            var response = await Get<BliveInfo>("https://api.live.bilibili.com/xlive/app-blink/v1/room/GetInfo?platform=android_link");
+            return response?.Data;
         }
 
         /// <summary>
@@ -169,9 +184,8 @@ namespace BliveHelper.Utils
                 Csrf = CSRF,
                 CsrfToken = CSRF,
             };
-            var response = await Client.PostAsync("https://api.live.bilibili.com/room/v1/Room/update", ToUrlEncodeed(requestData));
-            var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveTitleResponse>>();
-            return (data?.Code == 0, data?.Message ?? string.Empty, data?.Data);
+            var response = await PostFormUrlEncoded<BliveTitleResponse>("https://api.live.bilibili.com/room/v1/Room/update", requestData);
+            return (response?.Code == 0, response?.Message ?? string.Empty, response?.Data);
         }
 
         public async Task<BliveRtmpInfo?> StartLive(int roomId, string name, int areaId)
@@ -186,9 +200,8 @@ namespace BliveHelper.Utils
                 Csrf = CSRF,
                 CsrfToken = CSRF
             };
-            var response = await Client.PostAsync("https://api.live.bilibili.com/room/v1/Room/startLive", ToUrlEncodeed(requestData));
-            var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveStartResponse>>();
-            return data?.Data?.Rtmp;
+            var response = await PostFormUrlEncoded<BliveStartResponse>("https://api.live.bilibili.com/room/v1/Room/startLive", requestData);
+            return response?.Data?.Rtmp;
         }
 
         public async Task<BliveStopResponse?> StopLive(int roomId)
@@ -200,9 +213,8 @@ namespace BliveHelper.Utils
                 Csrf = CSRF,
                 CsrfToken = CSRF
             };
-            var response = await Client.PostAsync("https://api.live.bilibili.com/room/v1/Room/stopLive", ToUrlEncodeed(requestData));
-            var data = await response.Content.ReadFromJsonAsync<BliveResponse<BliveStopResponse>>();
-            return data?.Data;
+            var response = await PostFormUrlEncoded<BliveStopResponse>("https://api.live.bilibili.com/room/v1/Room/stopLive", requestData);
+            return response?.Data;
         }
 
         public async Task<string> GetOperationOnBroadcastCode()
@@ -212,9 +224,11 @@ namespace BliveHelper.Utils
                 Csrf = CSRF,
                 CsrfToken = CSRF
             };
-            var response = await Client.PostAsync("https://api.live.bilibili.com/xlive/open-platform/v1/common/operationOnBroadcastCode", ToUrlEncodeed(requestData));
-            var data =await response.Content.ReadFromJsonAsync<BliveResponse<BliveOperationOnBroadcastCodeResponse>>();
-            return data?.Data?.Code ?? string.Empty;
+            var response = await PostFormUrlEncoded<BliveOperationOnBroadcastCodeResponse>(
+                "https://api.live.bilibili.com/xlive/open-platform/v1/common/operationOnBroadcastCode",
+                requestData
+            );
+            return response?.Data?.Code ?? string.Empty;
         }
 
         private string GetCookie(string name)
