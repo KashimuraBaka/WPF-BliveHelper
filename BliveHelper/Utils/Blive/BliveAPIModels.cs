@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace BliveHelper.Utils.Blive
 {
@@ -252,22 +251,22 @@ namespace BliveHelper.Utils.Blive
         public int Bubble { get; set; }
         [JsonPropertyName("room_type")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int RoomType { get; set; } 
+        public int RoomType { get; set; }
         [JsonPropertyName("jumpfrom")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int JumpFrom { get; set; } 
+        public int JumpFrom { get; set; }
         [JsonPropertyName("reply_mid")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int ReplyMid { get; set; }
         [JsonPropertyName("reply_attr")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int ReplyAttr { get; set; } 
+        public int ReplyAttr { get; set; }
         [JsonPropertyName("reply_uname")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? ReplyUname { get; set; }
         [JsonPropertyName("replay_dmid")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? ReplayDmid { get; set; } 
+        public string? ReplayDmid { get; set; }
         [JsonPropertyName("statistics")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Statistics { get; set; }
