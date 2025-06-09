@@ -2,6 +2,7 @@
     x:Class="BliveHelper.Views.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:BliveHelper.Views.Components"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BliveHelper.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -53,7 +54,7 @@
                     </DockPanel>
                     <DockPanel Grid.Row="1" Grid.Column="2">
                         <TextBlock Width="Auto" Text="服务器密码" />
-                        <TextBox Text="{Binding ServerKey}" />
+                        <components:PasswordBox Password="{Binding ServerKey}" />
                     </DockPanel>
                     <DockPanel Grid.Row="1" Grid.Column="3">
                         <Button Margin="5,0,0,0" Padding="0" Command="{Binding SaveWebsocketSettingCommand}" Content="保存" />
@@ -81,11 +82,11 @@
                         </DockPanel>
                         <DockPanel>
                             <TextBlock Text="推流码" />
-                            <TextBox IsReadOnly="True" Text="{Binding StreamServerKey}" />
+                            <components:PasswordBox IsReadOnly="True" Password="{Binding StreamServerKey}" />
                         </DockPanel>
                         <DockPanel>
                             <TextBlock Text="身份码" />
-                            <TextBox IsReadOnly="True" Text="{Binding BroadcastCode}" />
+                            <components:PasswordBox IsReadOnly="True" Password="{Binding BroadcastCode}" />
                         </DockPanel>
                     </StackPanel>
                 </StackPanel>
