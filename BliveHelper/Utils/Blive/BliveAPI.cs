@@ -83,8 +83,16 @@ namespace BliveHelper.Utils.Blive
 
         private async Task<BliveResponse<T>?> PostFormUrlEncoded<T>(string url, object data)
         {
-            var response = await Client.PostAsync(url, ToUrlEncodeed(data));
-            return await response.Content.ReadFromJsonAsync<BliveResponse<T>>();
+            try
+            {
+                var response = await Client.PostAsync(url, ToUrlEncodeed(data));
+                return await response.Content.ReadFromJsonAsync<BliveResponse<T>>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error posting data to {url}: {ex.Message}");
+                return default;
+            }
         }
 
         /// <summary>
