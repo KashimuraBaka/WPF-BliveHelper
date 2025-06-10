@@ -1,46 +1,137 @@
 ﻿using BliveHelper.Utils;
 using BliveHelper.Utils.Blive;
 using BliveHelper.Utils.Obs;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using BliveHelper.Utils.Structs;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace BliveHelper.ViewModels.Windows
 {
-    public partial class MainWindowViewModel : ObservableObject
+    public class MainWindowViewModel : ObservableObject
     {
-        private BliveAPI BliveAPI { get; } = new();
-        private List<BliveArea> BaseLiveAreas { get; } = [];
+        private Window Window { get; }
+        private BliveAPI BliveAPI { get; } = new BliveAPI();
+        private List<BliveArea> BaseLiveAreas { get; } = new List<BliveArea>();
         private long RefreshTime { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        private ObsWebSocketAPI WebSocket { get; } = new();
+        private ObsWebSocketAPI WebSocket { get; } = new ObsWebSocketAPI();
 
         // 扫码
-        [ObservableProperty] private bool scanQR;
-        [ObservableProperty] private BitmapImage? qrCodeImage;
-        [ObservableProperty] private string qrCodeMessage = string.Empty;
+        private bool scanQR;
+        public bool ScanQR
+        {
+            get => scanQR;
+            set => SetProperty(ref scanQR, value);
+        }
+        private BitmapImage qrCodeImage;
+        public BitmapImage QrCodeImage
+        {
+            get => qrCodeImage;
+            set => SetProperty(ref qrCodeImage, value);
+        }
+        private string qrCodeMessage = string.Empty;
+        public string QrCodeMessage
+        {
+            get => qrCodeMessage;
+            set => SetProperty(ref qrCodeMessage, value);
+        }
         // WebSocket 设置
-        [ObservableProperty] private string serverUrl = string.Empty;
-        [ObservableProperty] private string serverKey = string.Empty;
+        private string serverUrl = string.Empty;
+        public string ServerUrl
+        {
+            get => serverUrl;
+            set => SetProperty(ref serverUrl, value);
+        }
+        private string serverKey = string.Empty;
+        public string ServerKey
+        {
+            get => serverKey;
+            set => SetProperty(ref serverKey, value);
+        }
         // 直播间信息
-        [ObservableProperty] private bool isStart;
-        [ObservableProperty] private string userName = string.Empty;
-        [ObservableProperty] private int roomId;
-        [ObservableProperty] private string title = string.Empty;
-        [ObservableProperty] private string selectedArea = string.Empty;
-        [ObservableProperty] private string selectedGame = string.Empty;
+        private bool isStart;
+        public bool IsStart
+        {
+            get => isStart;
+            set => SetProperty(ref isStart, value);
+        }
+        private string userName = string.Empty;
+        public string UserName
+        {
+            get => userName;
+            set => SetProperty(ref userName, value);
+        }
+        private int roomId;
+        public int RoomId
+        {
+            get => roomId;
+            set => SetProperty(ref roomId, value);
+        }
+        private string title = string.Empty;
+        public string Title
+        {
+            get => title;
+            set => SetProperty(ref title, value);
+        }
+        private string selectedArea = string.Empty;
+        public string SelectedArea
+        {
+            get => selectedArea;
+            set => SetProperty(ref selectedArea, value);
+        }
+        private string selectedGame = string.Empty;
+        public string SelectedGame
+        {
+            get => selectedGame;
+            set => SetProperty(ref selectedGame, value);
+        }
         // 推流码
-        [ObservableProperty] private string streamServerUrl = string.Empty;
-        [ObservableProperty] private string streamServerKey = string.Empty;
-        [ObservableProperty] private string broadcastCode = string.Empty;
+        private string streamServerUrl = string.Empty;
+        public string StreamServerUrl
+        {
+            get => streamServerUrl;
+            set => SetProperty(ref streamServerUrl, value);
+        }
+        private string streamServerKey = string.Empty;
+        public string StreamServerKey
+        {
+            get => streamServerKey;
+            set => SetProperty(ref streamServerKey, value);
+        }
+        private string broadcastCode = string.Empty;
+        public string BroadcastCode
+        {
+            get => broadcastCode;
+            set => SetProperty(ref broadcastCode, value);
+        }
         // 弹幕信息
-        [ObservableProperty] private bool danmuEnable = true;
-        [ObservableProperty] private string danmuMessage = string.Empty;
+        private bool danmuEnable = true;
+        public bool DanmuEnable
+        {
+            get => danmuEnable;
+            set => SetProperty(ref danmuEnable, value);
+        }
+        private string danmuMessage = string.Empty;
+        public string DanmuMessage
+        {
+            get => danmuMessage;
+            set => SetProperty(ref danmuMessage, value);
+        }
+        // 命令
+        public ICommand SignOutCommand => new RelayCommand(SignOut);
+        public ICommand ActionLiveCommand => new RelayCommand(ActionLive);
+        public ICommand SaveWebsocketSettingCommand => new RelayCommand(SaveWebsocketSetting);
+        public ICommand SendDanmuCommand => new RelayCommand(SendDanmu);
+        public ICommand ChangedSettingCommand => new RelayCommand(ChangedSetting);
 
-        public BliveSettingConfig Config { get; } = new("config.json");
-        public ObservableCollection<string> LiveAreas { get; } = [];
-        public ObservableCollection<string> LiveGames { get; } = [];
+        public ObservableCollection<string> LiveAreas { get; } = new ObservableCollection<string>();
+        public ObservableCollection<string> LiveGames { get; } = new ObservableCollection<string>();
         public bool ShowSignOutButton => !ScanQR;
         public string WebSocketConnectText => WebSocket.IsOpen ? "已连接" : "已断开";
         public string WebSocketVersionText => WebSocket.IsOpen ? $"[软件版本: {WebSocket.ObsStudioVerison}, 插件版本: {WebSocket.ObsPluginVersion}]" : string.Empty;
@@ -50,80 +141,78 @@ namespace BliveHelper.ViewModels.Windows
         public string ActionButtonText => IsStart ? "停止直播" : "开始直播";
         public int GameAreaID => BaseLiveAreas.FirstOrDefault(x => x.Name == SelectedArea)?.List.FirstOrDefault(x => x.Name == SelectedGame)?.Id ?? 0;
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(Window window)
         {
+            // 初始化窗口
+            Window = window;
+            // 监听属性变化
+            PropertyChanged += MainWindowViewModel_PropertyChanged;
             // 监听 WebSokcet 事件
             WebSocket.OnStateChanged += WebSocket_OnStateChanged;
             // 初始化 WebSocket 设置
-            ServerUrl = Config.WebSocket.ServerUrl;
-            ServerKey = Config.WebSocket.ServerKey;
+            ServerUrl = ENV.Config.WebSocket.ServerUrl;
+            ServerKey = ENV.Config.WebSocket.ServerKey;
             WebSocket.Connect(ServerUrl, ServerKey);
             // 如果没有 Cookies 则显示二维码扫码登录
-            if (Config.Cookies.Count == 0)
+            if (ENV.Config.Cookies.Count == 0)
             {
                 RefreshesQRCode();
             }
             else
             {
-                BliveAPI.Cookies = Config.Cookies;
-                RefreshLiveInfo();
+                BliveAPI.Cookies = ENV.Config.Cookies;
+                Window.Dispatcher.Invoke(RefreshLiveInfo);
             }
         }
 
-        private void WebSocket_OnStateChanged(object? sender, bool value)
+        private void MainWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            OnPropertyChanged(nameof(WebSocketStateText));
-        }
-
-        partial void OnScanQRChanged(bool value)
-        {
-            OnPropertyChanged(nameof(ShowSignOutButton));
-            if (value)
+            switch (e.PropertyName)
             {
-                RefreshesQRCode();
-            }
-        }
-
-        partial void OnIsStartChanged(bool value)
-        {
-            OnPropertyChanged(nameof(RoomIdText));
-            OnPropertyChanged(nameof(ActionButtonText));
-            if (!value)
-            {
-                StreamServerUrl = string.Empty;
-                StreamServerKey = string.Empty;
-                BroadcastCode = string.Empty;
-            }
-        }
-
-        partial void OnSelectedAreaChanged(string value)
-        {
-            if (!string.IsNullOrEmpty(value))
-            {
-                LiveGames.Clear();
-                var area = BaseLiveAreas.FirstOrDefault(x => x.Name == value);
-                if (area is not null)
-                {
-                    foreach (var game in area.List)
+                case nameof(IsStart):
+                    NotifyPropertyChanged(nameof(RoomIdText));
+                    NotifyPropertyChanged(nameof(ActionButtonText));
+                    if (!IsStart)
                     {
-                        LiveGames.Add(game.Name);
+                        StreamServerUrl = string.Empty;
+                        StreamServerKey = string.Empty;
+                        BroadcastCode = string.Empty;
                     }
-                }
+                    break;
+                case nameof(ScanQR):
+                    NotifyPropertyChanged(nameof(ShowSignOutButton));
+                    if (ScanQR) RefreshesQRCode();
+                    break;
+                case nameof(RoomId):
+                    NotifyPropertyChanged(nameof(RoomIdText));
+                    break;
+                case nameof(SelectedArea):
+                    // 切换分区时, 刷新游戏列表
+                    if (!string.IsNullOrEmpty(SelectedArea))
+                    {
+                        LiveGames.Clear();
+                        var area = BaseLiveAreas.FirstOrDefault(x => x.Name == SelectedArea);
+                        if (area != null)
+                        {
+                            foreach (var game in area.List)
+                            {
+                                LiveGames.Add(game.Name);
+                            }
+                        }
+                    }
+                    break;
+                case nameof(UserName):
+                    NotifyPropertyChanged(nameof(UserStateText));
+                    break;
             }
         }
 
-        partial void OnUserNameChanged(string value)
+        private void WebSocket_OnStateChanged(object sender, bool value)
         {
-            OnPropertyChanged(nameof(UserStateText));
+            NotifyPropertyChanged(nameof(WebSocketStateText));
         }
 
-        partial void OnRoomIdChanged(int value)
-        {
-            OnPropertyChanged(nameof(RoomIdText));
-        }
-
-        [RelayCommand]
-        private async Task ActionLive()
+        private async Task ActionLive(object value)
         {
             if (!IsStart)
             {
@@ -147,7 +236,7 @@ namespace BliveHelper.ViewModels.Windows
             else
             {
                 var res = await BliveAPI.StopLive(RoomId);
-                if (res is not null && res.Change == 1)
+                if (res != null && res.Change == 1)
                 {
                     IsStart = false;
                     WebSocket.StopStream();
@@ -155,11 +244,10 @@ namespace BliveHelper.ViewModels.Windows
             }
         }
 
-        [RelayCommand]
-        private void SignOut()
+        private void SignOut(object _)
         {
-            Config.Cookies = [];
-            BliveAPI.Cookies = [];
+            ENV.Config.Cookies = new Dictionary<string, string>();
+            BliveAPI.Cookies = new Dictionary<string, string>();
             IsStart = false;
             ScanQR = true;
             UserName = string.Empty;
@@ -169,17 +257,15 @@ namespace BliveHelper.ViewModels.Windows
             SelectedGame = string.Empty;
         }
 
-        [RelayCommand]
-        private void SaveWebsocketSetting()
+        private void SaveWebsocketSetting(object _)
         {
-            Config.WebSocket.ServerUrl = ServerUrl;
-            Config.WebSocket.ServerKey = ServerKey;
+            ENV.Config.WebSocket.ServerUrl = ServerUrl;
+            ENV.Config.WebSocket.ServerKey = ServerKey;
             // 重连 WebSocket 服务
             WebSocket.Connect(ServerUrl, ServerKey);
         }
 
-        [RelayCommand]
-        private async Task SendDanmu()
+        private async void SendDanmu(object _)
         {
             DanmuEnable = false;
             if (RoomId > 0 && !string.IsNullOrEmpty(DanmuMessage) && await BliveAPI.SendDanmu(RoomId, DanmuMessage))
@@ -189,19 +275,18 @@ namespace BliveHelper.ViewModels.Windows
             DanmuEnable = true;
         }
 
-        [RelayCommand]
-        private async Task ChangedSetting()
+        private async void ChangedSetting(object _)
         {
             if (!string.IsNullOrEmpty(SelectedArea) && !string.IsNullOrEmpty(SelectedGame))
             {
-                var (Success, Message, _) = await BliveAPI.SetLiveInfo(RoomId, Title, GameAreaID);
-                if (Success)
+                var result = await BliveAPI.SetLiveInfo(RoomId, Title, GameAreaID);
+                if (result.Success)
                 {
                     MessageBox.Show("修改完毕!");
                 }
                 else
                 {
-                    MessageBox.Show(Message);
+                    MessageBox.Show(result.Message);
                 }
             }
             else
@@ -215,20 +300,20 @@ namespace BliveHelper.ViewModels.Windows
             // 显示图形二维码
             ScanQR = true;
             // 获取二维码
-            var (image, key) = await BliveAPI.GetLoginQRCodeImage();
-            if (image is not null)
+            var imageData = await BliveAPI.GetLoginQRCodeImage();
+            if (imageData != null)
             {
-                QrCodeImage = image;
+                QrCodeImage = imageData.Image;
                 // 循环检查二维码状态
-                while (image == QrCodeImage)
+                while (imageData.Image == QrCodeImage)
                 {
-                    var state = await BliveAPI.PollLoginQRCode(key);
-                    if (state is not null)
+                    var state = await BliveAPI.PollLoginQRCode(imageData.Key);
+                    if (state != null)
                     {
                         if (state.Code == 0)
                         {
                             ScanQR = false;
-                            Config.Cookies = BliveAPI.Cookies;
+                            ENV.Config.Cookies = BliveAPI.Cookies;
                             RefreshLiveInfo();
                             break;
                         }
@@ -273,7 +358,7 @@ namespace BliveHelper.ViewModels.Windows
             while (RefreshTime == customTime)
             {
                 var info = await BliveAPI.GetInfo();
-                if (info is not null)
+                if (info != null)
                 {
                     RoomId = info.RoomId;
                     UserName = info.UserName;

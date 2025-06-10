@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BliveHelper", "BliveHelper\BliveHelper.csproj", "{317FCDAA-4963-451A-86B5-C9C92604E1C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BliveHelper", "BliveHelper\BliveHelper.csproj", "{43F9795D-BC10-4EF8-A7CD-E0D0A5418DEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BliveHelperTest", "BliveHelperTest\BliveHelperTest.csproj", "{73444445-1D5C-4BFE-A9F6-22474D674285}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{317FCDAA-4963-451A-86B5-C9C92604E1C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{317FCDAA-4963-451A-86B5-C9C92604E1C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{317FCDAA-4963-451A-86B5-C9C92604E1C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{317FCDAA-4963-451A-86B5-C9C92604E1C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43F9795D-BC10-4EF8-A7CD-E0D0A5418DEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43F9795D-BC10-4EF8-A7CD-E0D0A5418DEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43F9795D-BC10-4EF8-A7CD-E0D0A5418DEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43F9795D-BC10-4EF8-A7CD-E0D0A5418DEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73444445-1D5C-4BFE-A9F6-22474D674285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73444445-1D5C-4BFE-A9F6-22474D674285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73444445-1D5C-4BFE-A9F6-22474D674285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73444445-1D5C-4BFE-A9F6-22474D674285}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

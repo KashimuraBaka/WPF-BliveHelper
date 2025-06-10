@@ -17,8 +17,9 @@ namespace BliveHelper.Views.Windows
         public MainWindow()
         {
             InitializeComponent();
-            ViewModel = new();
+            ViewModel = new MainWindowViewModel(this);
         }
+        
 
         private void OnImageMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {

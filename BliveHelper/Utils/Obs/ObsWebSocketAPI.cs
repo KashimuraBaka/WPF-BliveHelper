@@ -1,12 +1,15 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net.WebSockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BliveHelper.Utils.Obs
 {
-    internal class ObsWebSocketAPI
+    public class ObsWebSocketAPI
     {
-        private ObsWebSocket? WebSocket { get; set; }
-        private CancellationTokenSource? Cts { get; set; }
+        private ObsWebSocket WebSocket { get; set; }
+        private CancellationTokenSource Cts { get; set; }
         private string ServerUrl { get; set; } = string.Empty;
         private string ServerKey { get; set; } = string.Empty;
 
@@ -14,42 +17,45 @@ namespace BliveHelper.Utils.Obs
         public string ObsPluginVersion { get; private set; } = "Unknown";
         public bool IsOpen => WebSocket?.State is WebSocketState.Open;
 
-        public event EventHandler<bool>? OnStateChanged;
+        public event EventHandler<bool> OnStateChanged;
 
-        public async void Connect(string url, string password)
+        public void Connect(string url, string password)
         {
             ServerUrl = url;
             ServerKey = password;
-            // 创建 CancellationTokenSource, 防止重复循环
-            var cts = new CancellationTokenSource();
-            // 连接到 OBS WebSocket 服务器, 如果连接失败则尝试重连
-            Cts?.Cancel();
-            Cts = cts;
-            while (!cts.Token.IsCancellationRequested)
+            Task.Factory.StartNew(async () =>
             {
-                try
+                // 创建 CancellationTokenSource, 防止重复循环
+                var cts = new CancellationTokenSource();
+                // 连接到 OBS WebSocket 服务器, 如果连接失败则尝试重连
+                Cts?.Cancel();
+                Cts = cts;
+                while (!cts.Token.IsCancellationRequested)
                 {
-                    if (WebSocket is not null)
+                    try
                     {
-                        WebSocket.OnConnected -= WebSocket_OnConnected;
-                        WebSocket.OnDisconnected -= WebSocket_OnDisconnected;
-                        WebSocket.Dispose();
+                        if (WebSocket != null)
+                        {
+                            WebSocket.OnConnected -= WebSocket_OnConnected;
+                            WebSocket.OnDisconnected -= WebSocket_OnDisconnected;
+                            WebSocket.Dispose();
+                        }
+                        WebSocket = new ObsWebSocket();
+                        WebSocket.OnConnected += WebSocket_OnConnected;
+                        WebSocket.OnDisconnected += WebSocket_OnDisconnected;
+                        WebSocket.Connect(url, password);
+                        break;
                     }
-                    WebSocket = new();
-                    WebSocket.OnConnected += WebSocket_OnConnected;
-                    WebSocket.OnDisconnected += WebSocket_OnDisconnected;
-                    WebSocket.Connect(url, password);
-                    break;
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine($"连接 OBS WebSocket 失败: {e.Message}");
+                        await Task.Delay(1000);
+                    }
                 }
-                catch (Exception e)
-                {
-                    Debug.WriteLine($"连接 OBS WebSocket 失败: {e.Message}");
-                    await Task.Delay(1000);
-                }
-            }
+            });
         }
 
-        private void WebSocket_OnConnected(object? sender, EventArgs e)
+        private void WebSocket_OnConnected(object sender, EventArgs e)
         {
             var obsVersion = GetVersion().Result;
             ObsStudioVerison = obsVersion?.OBSStudioVersion ?? "Unknown";
@@ -57,16 +63,16 @@ namespace BliveHelper.Utils.Obs
             OnStateChanged?.Invoke(this, IsOpen);
         }
 
-        private async void WebSocket_OnDisconnected(object? sender, EventArgs e)
+        private async void WebSocket_OnDisconnected(object sender, EventArgs e)
         {
             await Task.Delay(1000);
             Connect(ServerUrl, ServerKey);
             OnStateChanged?.Invoke(this, IsOpen);
         }
 
-        public async Task<ObsVersion?> GetVersion()
+        public async Task<ObsVersion> GetVersion()
         {
-            if (WebSocket is not null)
+            if (WebSocket != null)
             {
                 return await WebSocket.AsyncSendRequest<ObsVersion>(nameof(GetVersion));
             }
@@ -75,7 +81,7 @@ namespace BliveHelper.Utils.Obs
 
         public async void StartStream()
         {
-            if (WebSocket is not null)
+            if (WebSocket != null)
             {
                 await WebSocket.AsyncSendRequest<ObsStreamSettingsData>(nameof(StartStream));
             }
@@ -83,15 +89,15 @@ namespace BliveHelper.Utils.Obs
 
         public async void StopStream()
         {
-            if (WebSocket is not null)
+            if (WebSocket != null)
             {
                 await WebSocket.AsyncSendRequest<ObsStreamSettingsData>(nameof(StopStream));
             }
         }
 
-        public async Task<ObsStreamSettingsData?> GetStreamServiceSettings()
+        public async Task<ObsStreamSettingsData> GetStreamServiceSettings()
         {
-            if (WebSocket is not null)
+            if (WebSocket != null)
             {
                 return await WebSocket.AsyncSendRequest<ObsStreamSettingsData>(nameof(GetStreamServiceSettings));
             }
@@ -100,7 +106,7 @@ namespace BliveHelper.Utils.Obs
 
         public async void SetStreamServiceSettings(string serverUrl, string serverKey)
         {
-            if (WebSocket is not null)
+            if (WebSocket != null)
             {
                 var data = new ObsStreamSettingsData() { Type = "rtmp_custom" };
                 data.Settings.ServerUrl = serverUrl;

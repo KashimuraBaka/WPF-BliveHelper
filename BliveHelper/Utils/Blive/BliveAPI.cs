@@ -1,21 +1,23 @@
-﻿using QRCoder;
+﻿using BliveHelper.Utils.QRCoder;
+using BliveHelper.Utils.Structs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Reflection;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace BliveHelper.Utils.Blive
 {
-    internal class BliveAPI : IDisposable
+    public class BliveAPI : IDisposable
     {
         private HttpClient Client { get; }
-        private CookieContainer CookieContainer { get; } = new();
+        private CookieContainer CookieContainer { get; } = new CookieContainer();
         public Dictionary<string, string> Cookies
         {
             get
@@ -43,14 +45,14 @@ namespace BliveHelper.Utils.Blive
                     cookie.Expired = true;
                 }
                 // 更新 Cookie
-                foreach (var (domain, cookies) in value)
+                foreach (var kv in value)
                 {
-                    foreach (var cookieString in cookies.Split(";"))
+                    foreach (var cookieString in kv.Value.Split(';'))
                     {
-                        var kv = cookieString.Split("=");
-                        if (kv.Length == 2)
+                        var cookieKv = cookieString.Split('=');
+                        if (cookieKv.Length == 2)
                         {
-                            CookieContainer.Add(new Cookie(kv[0], kv[1], "/", domain));
+                            CookieContainer.Add(new Cookie(cookieKv[0], cookieKv[1], "/", kv.Key));
                         }
                     }
                 }
@@ -61,13 +63,16 @@ namespace BliveHelper.Utils.Blive
 
         public BliveAPI()
         {
-            Client = new(new HttpClientHandler { CookieContainer = CookieContainer });
+            Client = new HttpClient(new HttpClientHandler { CookieContainer = CookieContainer })
+            {
+                Timeout = TimeSpan.FromSeconds(5)
+            };
             //Client.DefaultRequestHeaders.Add("Origin", "https://link.bilibili.com");
             //Client.DefaultRequestHeaders.Referrer = new Uri("https://link.bilibili.com/p/center/index");
             Client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36");
         }
 
-        private async Task<BliveResponse<T>?> Get<T>(string url)
+        private async Task<BliveResponse<T>> Get<T>(string url)
         {
             try
             {
@@ -81,7 +86,7 @@ namespace BliveHelper.Utils.Blive
             }
         }
 
-        private async Task<BliveResponse<T>?> PostFormUrlEncoded<T>(string url, object data)
+        private async Task<BliveResponse<T>> PostFormUrlEncoded<T>(string url, object data)
         {
             try
             {
@@ -98,7 +103,7 @@ namespace BliveHelper.Utils.Blive
         /// <summary>
         /// 访问Bilibili服务器检查二维码扫描后的登录状态
         /// </summary>
-        public async Task<BliveQRCodeResponse?> GetLoginQRCode()
+        public async Task<BliveQRCodeResponse> GetLoginQRCode()
         {
             var response = await Get<BliveQRCodeResponse>("https://passport.bilibili.com/x/passport-login/web/qrcode/generate");
             return response?.Data;
@@ -108,29 +113,28 @@ namespace BliveHelper.Utils.Blive
         /// 获取二维码图像
         /// </summary>
         /// <returns></returns>
-        public async Task<(BitmapImage? Image, string key)> GetLoginQRCodeImage()
+        public async Task<BliveQRCodeImage> GetLoginQRCodeImage()
         {
-            var qrcodeData = await GetLoginQRCode();
-            if (qrcodeData is not null)
+            var qrCodeResponse = await GetLoginQRCode();
+            if (qrCodeResponse != null)
             {
-                var qrGenerator = new QRCodeGenerator();
-                var qrCode = new QRCode(qrGenerator.CreateQrCode(qrcodeData.Url, QRCodeGenerator.ECCLevel.Q));
+                using (var qrGenerator = new QRCodeGenerator())
+                {
+                    var qrCodeData = qrGenerator.CreateQrCode(qrCodeResponse.Url, QRCodeGenerator.ECCLevel.Q);
+                    var bitmapByteQRCode = new BitmapByteQRCode(qrCodeData);
+                    var qrCodeBytes = bitmapByteQRCode.GetGraphic(20);
+                    using (var ms = new MemoryStream(qrCodeBytes))
+                    {
+                        var bitmapImage = new BitmapImage();
+                        bitmapImage.BeginInit();
+                        bitmapImage.StreamSource = ms;
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmapImage.EndInit();
+                        bitmapImage.Freeze();
 
-                // 生成 Bitmap 图像
-                using var qrBitmap = qrCode.GetGraphic(10);
-
-                // 写入到 BitmapImage
-                using var memory = new MemoryStream();
-                qrBitmap.Save(memory, ImageFormat.Png);
-                memory.Position = 0;
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-
-                return (bitmapImage, qrcodeData.QRCodeKey);
+                        return new BliveQRCodeImage(bitmapImage, qrCodeResponse.QRCodeKey);
+                    }
+                }
             }
             return default;
         }
@@ -140,7 +144,7 @@ namespace BliveHelper.Utils.Blive
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<BliveQRCodePollResponse?> PollLoginQRCode(string key)
+        public async Task<BliveQRCodePollResponse> PollLoginQRCode(string key)
         {
             var response = await Get<BliveQRCodePollResponse>($"https://passport.bilibili.com/x/passport-login/web/qrcode/poll?qrcode_key={key}");
             return response?.Data ?? default;
@@ -161,17 +165,17 @@ namespace BliveHelper.Utils.Blive
         /// 获取直播间分区
         /// </summary>
         /// <returns></returns>
-        public async Task<BliveArea[]> GetAreas()
+        public async Task<List<BliveArea>> GetAreas()
         {
-            var response = await Get<BliveArea[]>("https://api.live.bilibili.com/room/v1/Area/getList?show_pinyin=1");
-            return response?.Data ?? [];
+            var response = await Get<List<BliveArea>>("https://api.live.bilibili.com/room/v1/Area/getList?show_pinyin=1");
+            return response?.Data ?? new List<BliveArea>();
         }
 
         /// <summary>
         /// 获取直播间ID
         /// </summary>
         /// <returns></returns>
-        public async Task<BliveInfo?> GetInfo()
+        public async Task<BliveInfo> GetInfo()
         {
             var response = await Get<BliveInfo>("https://api.live.bilibili.com/xlive/app-blink/v1/room/GetInfo?platform=android_link");
             return response?.Data;
@@ -183,7 +187,7 @@ namespace BliveHelper.Utils.Blive
         /// <param name="roomId"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async Task<(bool Success, string Message, BliveTitleResponse? Data)> SetLiveInfo(int roomId, string name, int areaId)
+        public async Task<SetLiveInfoResult> SetLiveInfo(int roomId, string name, int areaId)
         {
             var requestData = new BliveTitleRequestData()
             {
@@ -194,10 +198,10 @@ namespace BliveHelper.Utils.Blive
                 CsrfToken = CSRF,
             };
             var response = await PostFormUrlEncoded<BliveTitleResponse>("https://api.live.bilibili.com/room/v1/Room/update", requestData);
-            return (response?.Code == 0, response?.Message ?? string.Empty, response?.Data);
+            return new SetLiveInfoResult(response?.Code == 0, response?.Message ?? string.Empty, response?.Data);
         }
 
-        public async Task<BliveRtmpInfo?> StartLive(int roomId, string name, int areaId)
+        public async Task<BliveRtmpInfo> StartLive(int roomId, string name, int areaId)
         {
             // 设置直播间标题
             await SetLiveInfo(roomId, name, areaId);
@@ -213,7 +217,7 @@ namespace BliveHelper.Utils.Blive
             return response?.Data?.Rtmp;
         }
 
-        public async Task<BliveStopResponse?> StopLive(int roomId)
+        public async Task<BliveStopResponse> StopLive(int roomId)
         {
             // 开始直播间
             var requestData = new BliveStartRequestData()
@@ -249,23 +253,29 @@ namespace BliveHelper.Utils.Blive
                 CsrfToken = CSRF,
                 Msg = message
             };
-            var response = await PostFormUrlEncoded<JsonObject>("https://api.live.bilibili.com/msg/send", requestData);
-            return response is not null && response.Code == 0;
+            var response = await PostFormUrlEncoded<JObject>("https://api.live.bilibili.com/msg/send", requestData);
+            return response != null && response.Code == 0;
         }
 
         private string GetCookie(string name)
         {
-            var cookie = CookieContainer.GetAllCookies().FirstOrDefault(x => x.Name == name);
-            return cookie?.Value ?? string.Empty;
+            foreach (Cookie cookie in CookieContainer.GetAllCookies())
+            {
+                if (cookie.Name == name)
+                {
+                    return cookie.Value;
+                }
+            }
+            return string.Empty;
         }
 
-        private static FormUrlEncodedContent? ToUrlEncodeed(object obj)
+        private static FormUrlEncodedContent ToUrlEncodeed(object obj)
         {
             var dict = new Dictionary<string, string>();
             foreach (var prop in obj.GetType().GetProperties())
             {
-                var jsonAttr = prop.GetCustomAttribute<JsonPropertyNameAttribute>();
-                var key = jsonAttr?.Name ?? prop.Name;
+                var jsonAttr = prop.GetCustomAttribute<JsonPropertyAttribute>();
+                var key = jsonAttr?.PropertyName ?? prop.Name;
                 dict.Add(key, prop.GetValue(obj)?.ToString() ?? string.Empty);
             }
             return new FormUrlEncodedContent(dict);

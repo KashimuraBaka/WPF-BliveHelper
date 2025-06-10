@@ -1,27 +1,48 @@
-﻿using System.Buffers;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Net.WebSockets;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BliveHelper.Utils.Obs
 {
+    public struct ObsMethodHandler
+    {
+        public TaskCompletionSource<object> Tcs { get; set; }
+        public Type Type { get; set; }
+        public ObsMethodHandler(TaskCompletionSource<object> tcs, Type type)
+        {
+            Tcs = tcs;
+            Type = type;
+        }
+    }
+
+    public struct ObsResponseMessage
+    {
+        public WebSocketMessageType Type { get; set; }
+        public string Message { get; set; }
+        public ObsResponseMessage(WebSocketMessageType type, string message)
+        {
+            Type = type;
+            Message = message;
+        }
+    }
+
     public class ObsWebSocket : IDisposable
     {
-        private record struct ObsMethodHandler(TaskCompletionSource<object?> Tcs, Type Type);
-
-        private ClientWebSocket WebSocket { get; set; } = new();
-        private ConcurrentDictionary<string, ObsMethodHandler> ResponseMethods { get; } = new();
+        private ClientWebSocket WebSocket { get; set; } = new ClientWebSocket();
+        private ConcurrentDictionary<string, ObsMethodHandler> ResponseMethods { get; } = new ConcurrentDictionary<string, ObsMethodHandler>();
         private string ServerKey { get; set; } = string.Empty;
 
         public int BufferSize { get; set; } = 2048;
 
-        public event EventHandler? OnConnected;
-        public event EventHandler? OnDisconnected;
+        public event EventHandler OnConnected;
+        public event EventHandler OnDisconnected;
 
         public WebSocketState State => WebSocket.State;
 
@@ -44,31 +65,23 @@ namespace BliveHelper.Utils.Obs
 
         private async void ListenMessages()
         {
-            var buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
-            try
+            var segment = new ArraySegment<byte>(new byte[BufferSize]);
+            while (WebSocket != null && WebSocket.State is WebSocketState.Open)
             {
-                var segment = new ArraySegment<byte>(buffer);
-                while (WebSocket is not null && WebSocket.State is WebSocketState.Open)
+                var data = await ReadMessage(segment);
+                // 消息终止
+                if (data.Type != WebSocketMessageType.Close)
                 {
-                    var (messageType, message) = await ReadMessage(segment);
-                    // 消息终止
-                    if (messageType is not WebSocketMessageType.Close)
-                    {
-                        // 处理消息
-                        HandleMessage(message);
-                        continue;
-                    }
-                    break;
+                    // 处理消息
+                    HandleMessage(data.Message);
+                    continue;
                 }
-                OnDisconnected?.Invoke(this, EventArgs.Empty);
+                break;
             }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
-            }
+            OnDisconnected?.Invoke(this, EventArgs.Empty);
         }
 
-        private async Task<(WebSocketMessageType type, string message)> ReadMessage(ArraySegment<byte> segment)
+        private async Task<ObsResponseMessage> ReadMessage(ArraySegment<byte> segment)
         {
             var strings = new StringBuilder();
             try
@@ -79,84 +92,94 @@ namespace BliveHelper.Utils.Obs
                     result = await WebSocket.ReceiveAsync(segment, CancellationToken.None);
                     if (result.Count > 0)
                     {
-                        strings.Append(Encoding.UTF8.GetString(segment[..result.Count]));
+                        strings.Append(Encoding.UTF8.GetString(segment.Array, 0, result.Count));
                     }
-                } while (result.MessageType is not WebSocketMessageType.Close && !result.EndOfMessage);
-                return (result.MessageType, strings.ToString());
+                } while (result.MessageType != WebSocketMessageType.Close && !result.EndOfMessage);
+                return new ObsResponseMessage(result.MessageType, strings.ToString());
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"[Error] 读取消息异常: {ex.Message}");
-                return (WebSocketMessageType.Close, string.Empty);
+                return new ObsResponseMessage(WebSocketMessageType.Close, string.Empty);
             }
         }
 
-        public void SendRequest<T>(ObsMessageTypes type, T? data)
+        public void SendRequest<T>(ObsMessageTypes type, T data)
         {
-            if (WebSocket is not null && WebSocket.State is WebSocketState.Open)
+            if (WebSocket != null && WebSocket.State is WebSocketState.Open)
             {
                 var message = new ObsData<T>() { OperationCode = type, Data = data };
-                var messageStr = JsonSerializer.Serialize(message);
-                WebSocket.SendAsync(Encoding.UTF8.GetBytes(messageStr), WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None).Wait();
+                var messageStr = JsonConvert.SerializeObject(message);
+                var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(messageStr));
+                WebSocket.SendAsync(arraySegment, WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None).Wait();
             }
         }
 
-        public async Task<T?> AsyncSendRequest<T>(string method) where T : class
+        public Task<T> AsyncSendRequest<T>(string method) where T : class
         {
-            return await AsyncSendRequest<T>(method, null);
+            return AsyncSendRequestByThread<T>(method, null);
         }
 
-        public async Task<T?> AsyncSendRequest<T>(string method, object? data, int timeout = 5) where T : class
+        public Task<T> AsyncSendRequest<T>(string method, object data, int timeout = 5) where T : class
         {
-            if (WebSocket is not null && WebSocket.State is WebSocketState.Open)
+            return AsyncSendRequestByThread<T>(method, data, timeout);
+        }
+
+        public Task<T> AsyncSendRequestByThread<T>(string method, object data, int timeout = 5) where T : class
+        {
+            return Task.Run(async () =>
             {
-                // 处理请求消息
-                var requestData = new ObsRequestMessage<object>() { RequestType = method, RequestData = data };
-                var message = new ObsData<ObsRequestMessage<object>>() { OperationCode = ObsMessageTypes.Request, Data = requestData };
-                var messageStr = JsonSerializer.Serialize(message);
-                await WebSocket.SendAsync(Encoding.UTF8.GetBytes(messageStr), WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None);
-                // 发送后可以等待响应
-                var tcs = new TaskCompletionSource<object?>();
-                ResponseMethods.TryAdd(requestData.RequestId, new ObsMethodHandler(tcs, typeof(T)));
-                // 等待消息 
-                try
+                if (WebSocket != null && WebSocket.State is WebSocketState.Open)
                 {
-                    await tcs.Task.WaitAsync(TimeSpan.FromSeconds(timeout));
-                    // 如果消息未被取消则处理响应事件
-                    if (tcs.Task.IsCanceled)
+                    // 处理请求消息
+                    var requestData = new ObsRequestMessage<object>() { RequestType = method, RequestData = data };
+                    var message = new ObsData<ObsRequestMessage<object>>() { OperationCode = ObsMessageTypes.Request, Data = requestData };
+                    var messageStr = JsonConvert.SerializeObject(message);
+                    var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(messageStr));
+                    await WebSocket.SendAsync(arraySegment, WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None);
+                    // 发送后可以等待响应
+                    var tcs = new TaskCompletionSource<object>();
+                    ResponseMethods.TryAdd(requestData.RequestId, new ObsMethodHandler(tcs, typeof(T)));
+                    // 等待消息 
+                    try
+                    {
+                        tcs.Task.Wait(timeout * 1000);
+                        // 如果消息未被取消则处理响应事件
+                        if (tcs.Task.IsCanceled)
+                        {
+                            return default;
+                        }
+                        return tcs.Task.Result as T;
+                    }
+                    catch
                     {
                         return default;
                     }
-                    return tcs.Task.Result as T;
                 }
-                catch
-                {
-                    return default;
-                }
-            }
-            return default;
+                return default;
+            });
         }
 
         private void HandleMessage(string message)
         {
             Task.Run(() =>
             {
-                if (TryJsonDeserialize<ObsData<JsonObject>>(message, out var messageObject))
+                if (TryJsonDeserialize<ObsData<JObject>>(message, out var messageObject))
                 {
                     switch (messageObject.OperationCode)
                     {
                         case ObsMessageTypes.Hello:
-                            SendAuthentication(messageObject.Data.Deserialize<ObsHelloResponse>());
+                            SendAuthentication(messageObject.Data.ToObject<ObsHelloResponse>());
                             break;
                         case ObsMessageTypes.Identified:
                             // 返回该消息说明连接成功
                             OnConnected?.Invoke(this, EventArgs.Empty);
                             break;
                         case ObsMessageTypes.RequestResponse:
-                            var response = messageObject.Data.Deserialize<ObsResponse<JsonObject>>();
-                            if (response is not null && ResponseMethods.TryRemove(response.RequestId, out var handler))
+                            var response = messageObject.Data.ToObject<ObsResponse<JObject>>();
+                            if (response != null && ResponseMethods.TryRemove(response.RequestId, out var handler))
                             {
-                                handler.Tcs.SetResult(response.ResponseData?.Deserialize(handler.Type));
+                                handler.Tcs.SetResult(response.ResponseData?.ToObject(handler.Type));
                             }
                             else
                             {
@@ -174,10 +197,10 @@ namespace BliveHelper.Utils.Obs
             });
         }
 
-        private void SendAuthentication(ObsHelloResponse? jsonObject)
+        private void SendAuthentication(ObsHelloResponse jsonObject)
         {
             var request = new ObsAuthenticationRequest();
-            if (jsonObject is not null)
+            if (jsonObject != null)
             {
                 var secret = HashEncode(ServerKey + jsonObject.Authentication.Salt);
                 var authResponse = HashEncode(secret + jsonObject.Authentication.Challenge);
@@ -186,12 +209,12 @@ namespace BliveHelper.Utils.Obs
             SendRequest(ObsMessageTypes.Identify, request);
         }
 
-        private static bool TryJsonDeserialize<T>(string jsonStr, [NotNullWhen(true)] out T? result) where T : class
+        private static bool TryJsonDeserialize<T>(string jsonStr, out T result) where T : class
         {
             try
             {
-                result = JsonSerializer.Deserialize<T>(jsonStr);
-                return result is not null;
+                result = JsonConvert.DeserializeObject<T>(jsonStr);
+                return result != null;
             }
             catch
             {
@@ -202,14 +225,17 @@ namespace BliveHelper.Utils.Obs
 
         private static string HashEncode(string input)
         {
-            var textBytes = Encoding.ASCII.GetBytes(input);
-            var hash = SHA256.HashData(textBytes);
-            return Convert.ToBase64String(hash);
+            using (var sha256 = SHA256.Create())
+            {
+                var textBytes = Encoding.ASCII.GetBytes(input);
+                var hash = sha256.ComputeHash(textBytes);
+                return Convert.ToBase64String(hash);
+            }
         }
 
         public void Dispose()
         {
-            if (WebSocket is not null && WebSocket.State is WebSocketState.Open)
+            if (WebSocket != null && WebSocket.State is WebSocketState.Open)
             {
                 WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
                 WebSocket.Dispose();
