@@ -178,7 +178,7 @@ namespace BliveHelper.ViewModels.Windows
             NotifyPropertyChanged(nameof(WebSocketStateText));
         }
 
-        private async Task ActionLive(object value)
+        private async void ActionLive(object value)
         {
             StartEnable = false;
             if (!IsStart)
@@ -191,7 +191,8 @@ namespace BliveHelper.ViewModels.Windows
                         IsStart = true;
                         StreamServerUrl = rtmp.ServerUrl;
                         StreamServerKey = rtmp.Code;
-                        ENV.WebSocket.SetStreamServiceSettings(StreamServerUrl, StreamServerKey);
+                        await ENV.WebSocket.SetStreamServiceSettings(StreamServerUrl, StreamServerKey);
+                        await ENV.WebSocket.StartStream();
                     }
                     else
                     {
@@ -209,7 +210,7 @@ namespace BliveHelper.ViewModels.Windows
                 if (res != null && res.Change == 1)
                 {
                     IsStart = false;
-                    ENV.WebSocket.StopStream();
+                    await ENV.WebSocket.StopStream();
                 }
             }
             StartEnable = true;
