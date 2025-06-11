@@ -15,7 +15,7 @@ namespace BliveHelper.Views.Components
             nameof(Password),
             typeof(string),
             typeof(PasswordBox),
-            new FrameworkPropertyMetadata(default(string), OnPropertyChangedPassword)
+            new FrameworkPropertyMetadata(default(string), OnPropertyChangedPassword) { BindsTwoWayByDefault = true }
         );
 
         private static void OnPropertyChangedPassword(DependencyObject d, DependencyPropertyChangedEventArgs e)
