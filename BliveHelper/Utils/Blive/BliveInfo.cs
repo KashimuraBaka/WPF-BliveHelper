@@ -83,7 +83,7 @@ namespace BliveHelper.Utils.Blive
                     {
                         SelectedArea = SelectedArea ?? info.ParentName;
                         SelectedGame = SelectedGame ?? info.AreaV2Name;
-                        Title = info.Title;
+                        Title = Title ?? info.Title;
                         IsStart = info.LiveStatus is BliveState.Live;
                         RoomId = info.RoomId;
                         UserName = info.UserName;
