@@ -15,7 +15,6 @@ namespace BliveHelper.ViewModels.Windows
 {
     public class MainWindowViewModel : ObservableObject
     {
-        public BliveAPI BliveAPI { get; } = new BliveAPI();
         private List<BliveArea> BaseLiveAreas { get; } = new List<BliveArea>();
         private long RefreshTime { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -186,7 +185,7 @@ namespace BliveHelper.ViewModels.Windows
             {
                 if (!string.IsNullOrEmpty(SelectedArea) && !string.IsNullOrEmpty(SelectedGame))
                 {
-                    var rtmp = await BliveAPI.StartLive(RoomId, Title, GameAreaID);
+                    var rtmp = await ENV.BliveAPI.StartLive(RoomId, Title, GameAreaID);
                     if (rtmp != null && !string.IsNullOrEmpty(rtmp.ServerUrl))
                     {
                         IsStart = true;
@@ -206,7 +205,7 @@ namespace BliveHelper.ViewModels.Windows
             }
             else
             {
-                var res = await BliveAPI.StopLive(RoomId);
+                var res = await ENV.BliveAPI.StopLive(RoomId);
                 if (res != null && res.Change == 1)
                 {
                     IsStart = false;
@@ -222,7 +221,7 @@ namespace BliveHelper.ViewModels.Windows
             if (result is MessageBoxResult.OK)
             {
                 ENV.Config.Cookies = new Dictionary<string, string>();
-                BliveAPI.Cookies = new Dictionary<string, string>();
+                ENV.BliveAPI.Cookies = new Dictionary<string, string>();
                 IsStart = false;
                 ScanQR = true;
                 UserName = string.Empty;
@@ -236,7 +235,7 @@ namespace BliveHelper.ViewModels.Windows
         private async void SendDanmu(object _)
         {
             DanmuEnable = false;
-            if (RoomId > 0 && !string.IsNullOrEmpty(DanmuMessage) && await BliveAPI.SendDanmu(RoomId, DanmuMessage))
+            if (RoomId > 0 && !string.IsNullOrEmpty(DanmuMessage) && await ENV.BliveAPI.SendDanmu(RoomId, DanmuMessage))
             {
                 DanmuMessage = string.Empty;
             }
@@ -247,7 +246,7 @@ namespace BliveHelper.ViewModels.Windows
         {
             if (!string.IsNullOrEmpty(SelectedArea) && !string.IsNullOrEmpty(SelectedGame))
             {
-                var result = await BliveAPI.SetLiveInfo(RoomId, Title, GameAreaID);
+                var result = await ENV.BliveAPI.SetLiveInfo(RoomId, Title, GameAreaID);
                 if (result.Success)
                 {
                     MessageBox.Show("修改完毕!");
@@ -268,20 +267,20 @@ namespace BliveHelper.ViewModels.Windows
             // 显示图形二维码
             ScanQR = true;
             // 获取二维码
-            var imageData = await BliveAPI.GetLoginQRCodeImage();
+            var imageData = await ENV.BliveAPI.GetLoginQRCodeImage();
             if (imageData != null)
             {
                 QrCodeImage = imageData.Image;
                 // 循环检查二维码状态
                 while (imageData.Image == QrCodeImage)
                 {
-                    var state = await BliveAPI.PollLoginQRCode(imageData.Key);
+                    var state = await ENV.BliveAPI.PollLoginQRCode(imageData.Key);
                     if (state != null)
                     {
                         if (state.Code == 0)
                         {
                             ScanQR = false;
-                            ENV.Config.Cookies = BliveAPI.Cookies;
+                            ENV.Config.Cookies = ENV.BliveAPI.Cookies;
                             RefreshLiveInfo();
                             break;
                         }
@@ -309,14 +308,14 @@ namespace BliveHelper.ViewModels.Windows
         {
             // 添加直播分区
             BaseLiveAreas.Clear();
-            BaseLiveAreas.AddRange(await BliveAPI.GetAreas());
+            BaseLiveAreas.AddRange(await ENV.BliveAPI.GetAreas());
             LiveAreas.Clear();
             foreach (var area in BaseLiveAreas)
             {
                 LiveAreas.Add(area.Name);
             }
             // 获取直播间信息
-            var liveInfo = await BliveAPI.GetInfo();
+            var liveInfo = await ENV.BliveAPI.GetInfo();
             Title = liveInfo?.Title ?? string.Empty;
             SelectedArea = liveInfo?.ParentName ?? string.Empty;
             SelectedGame = liveInfo?.AreaV2Name ?? string.Empty;
@@ -325,21 +324,21 @@ namespace BliveHelper.ViewModels.Windows
             RefreshTime = customTime;
             while (RefreshTime == customTime)
             {
-                var info = await BliveAPI.GetInfo();
+                var info = await ENV.BliveAPI.GetInfo();
                 if (info != null)
                 {
                     IsStart = info.LiveStatus is BliveState.Live;
                     RoomId = info.RoomId;
                     UserName = info.UserName;
                     // 获取推流码信息
-                    var streamInfo = await BliveAPI.GetLiveStremInfo(info.RoomId);
+                    var streamInfo = await ENV.BliveAPI.GetLiveStremInfo(info.RoomId);
                     if (streamInfo != null)
                     {
                         StreamServerUrl = streamInfo.Rtmp.ServerUrl;
                         StreamServerKey = streamInfo.Rtmp.Code;
                     }
                     // 获取身份码信息
-                    var broadcastCode = await BliveAPI.GetOperationOnBroadcastCode();
+                    var broadcastCode = await ENV.BliveAPI.GetOperationOnBroadcastCode();
                     if (!string.IsNullOrEmpty(broadcastCode))
                     {
                         BroadcastCode = broadcastCode;

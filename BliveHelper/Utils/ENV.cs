@@ -1,13 +1,17 @@
-﻿using BliveHelper.Utils.Obs;
+﻿using BilibiliDM_PluginFramework;
+using BliveHelper.Utils.Blive;
+using BliveHelper.Utils.Obs;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace BliveHelper.Utils
 {
     public static class ENV
     {
-        public static Main DanMuPlugin { get; set; }
+        public static DMPlugin DanMuPlugin { get; set; }
         public static Config Config { get; } = new Config();
+        public static BliveAPI BliveAPI { get; } = new BliveAPI();
 
         public static string AppDllFileName { get; } = Assembly.GetExecutingAssembly().Location;
         public static string AppDllFilePath { get; } = new FileInfo(AppDllFileName).DirectoryName;
@@ -16,8 +20,12 @@ namespace BliveHelper.Utils
 
         public static ObsWebSocketAPI WebSocket { get; } = new ObsWebSocketAPI();
 
-        public static void StartWebSocket()
+        public static async Task InitServices()
         {
+            await Config.LoadAsync();
+            // 设置 Cookies
+            BliveAPI.Cookies = Config.Cookies;
+            // 尝试启动 WebSocket 服务
             WebSocket.Connect(Config.WebSocket.ServerUrl, Config.WebSocket.ServerKey);
         }
 

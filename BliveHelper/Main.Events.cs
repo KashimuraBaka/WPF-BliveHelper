@@ -15,9 +15,8 @@ namespace BliveHelper
                 Log("未发现配置文件夹，尝试创建中");
                 Directory.CreateDirectory(ENV.ConfigDirectory);
             }
-            await ENV.Config.LoadAsync();
-            // 尝试启动 WebSocket 服务
-            ENV.StartWebSocket();
+            // 初始化服务
+            await ENV.InitServices();
         }
 
         public override void DeInit()

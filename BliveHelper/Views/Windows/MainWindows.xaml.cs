@@ -70,7 +70,6 @@ namespace BliveHelper.Views.Windows
             }
             else
             {
-                ViewModel.BliveAPI.Cookies = ENV.Config.Cookies;
                 ViewModel.RefreshLiveInfo();
             }
         }
