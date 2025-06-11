@@ -1,11 +1,15 @@
 ﻿using BilibiliDM_PluginFramework;
 using BliveHelper.Utils;
+using BliveHelper.Views.Windows;
 using System;
+using System.Windows;
 
 namespace BliveHelper
 {
     public partial class Main : DMPlugin
     {
+        public MainWindow AdminWindow { get; } = new MainWindow();
+
         public Main()
         {
             ENV.DanMuPlugin = this;
@@ -16,17 +20,17 @@ namespace BliveHelper
             PluginVer = GetVersion();
             PluginDesc = "Bilibili直播 开播助手";
 
-            Connected += DanMuJi_Connected;
-            Disconnected += DanMuJi_Disconnected;
+            Connected += OnConnected;
+            Disconnected += OnDisconnected;
+            ReceivedDanmaku += OnReceivedDanmaku;
+            ReceivedRoomCount += OnReceivedRoomCount;
             AppDomain.CurrentDomain.UnhandledException += OnError;
         }
 
-        private void DanMuJi_Connected(object sender, ConnectedEvtArgs e)
+        public void Debugindow()
         {
-        }
-
-        private void DanMuJi_Disconnected(object sender, DisconnectEvtArgs e)
-        {
+            var app = new Application();
+            app.Run(AdminWindow);
         }
     }
 }

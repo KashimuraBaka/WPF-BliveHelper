@@ -1,7 +1,7 @@
-﻿using BliveHelper.Utils;
-using BliveHelper.Views.Windows;
+﻿using BilibiliDM_PluginFramework;
+using BliveHelper.Utils;
+using System;
 using System.IO;
-using System.Threading;
 
 namespace BliveHelper
 {
@@ -9,24 +9,55 @@ namespace BliveHelper
     {
         public override async void Inited()
         {
-            ENV.Log("加载配置中...");
+            Log("加载配置中...");
             if (!Directory.Exists(ENV.ConfigDirectory))
             {
                 Log("未发现配置文件夹，尝试创建中");
                 Directory.CreateDirectory(ENV.ConfigDirectory);
             }
             await ENV.Config.LoadAsync();
-            ENV.Log("配置加载完毕!");
+            // 尝试启动 WebSocket 服务
+            ENV.StartWebSocket();
+        }
+
+        public override void DeInit()
+        {
+            AdminWindow.Close();
         }
 
         public override void Admin()
         {
-            var windowThread = new Thread(() =>
-            {
-                new MainWindow().ShowDialog();
-            });
-            windowThread.SetApartmentState(ApartmentState.STA);
-            windowThread.Start();
+            AdminWindow.ShowDialog();
+        }
+
+        public override void Start()
+        {
+        }
+
+        public override void Stop()
+        {
+        }
+
+        private void OnConnected(object sender, ConnectedEvtArgs e)
+        {
+        }
+
+        private void OnDisconnected(object sender, DisconnectEvtArgs e)
+        {
+        }
+
+        private void OnReceivedDanmaku(object sender, ReceivedDanmakuArgs e)
+        {
+        }
+
+        private void OnReceivedRoomCount(object sender, ReceivedRoomCountArgs e)
+        {
+        }
+
+        private void OnError(object sender, UnhandledExceptionEventArgs e)
+        {
+            var obj = (Exception)e.ExceptionObject;
+            ENV.Log(obj.ToString());
         }
     }
 }
