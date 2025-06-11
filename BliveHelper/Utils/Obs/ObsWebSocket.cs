@@ -125,7 +125,7 @@ namespace BliveHelper.Utils.Obs
             return AsyncSendRequestByThread<T>(method, data, timeout);
         }
 
-        public Task<T> AsyncSendRequestByThread<T>(string method, object data, int timeout = 5) where T : class
+        private Task<T> AsyncSendRequestByThread<T>(string method, object data, int timeout = 5) where T : class
         {
             return Task.Run(async () =>
             {
