@@ -337,4 +337,54 @@ namespace BliveHelper.Utils.Blive
         [JsonProperty("uid_list")]
         public BiliUIDInfo[] UIDs { get; set; } = Array.Empty<BiliUIDInfo>();
     }
+
+    public class BliveBlockUserRequest : BliveCsrf
+    {
+        [JsonProperty("roomid")]
+        public int RoomId { get; set; }
+        [JsonProperty("type")]
+        public int Block { get; set; }
+        [JsonProperty("content")]
+        public string UserContent { get; set; }
+        [JsonProperty("hour")]
+        public int Hour { get; set; }
+    }
+
+    public class BliveRemoveBlockUserRequest : BliveCsrf
+    {
+        [JsonProperty("roomid")]
+        public int RoomId { get; set; }
+        [JsonProperty("id")]
+        public long BlockId { get; set; }
+    }
+
+    public class BliveBlockUserInfo
+    {
+        [JsonProperty("id")]
+        public long BlockId { get; set; }
+        [JsonProperty("is_anchor")]
+        public bool IsAnchor { get; set; }
+        [JsonProperty("roomid")]
+        public int RoomId { get; set; }
+        [JsonProperty("uid")]
+        public long UserId { get; set; }
+        [JsonProperty("uname")]
+        public string UserName { get; set; }
+        [JsonProperty("type")]
+        public int Type { get; set; } // 1:封禁, 2:屏蔽
+        [JsonProperty("adminid")]
+        public long AdminId { get; set; }
+        [JsonProperty("admin_uname")]
+        public string AdminUserName { get; set; } = string.Empty;
+        [JsonProperty("msg")]
+        public string Message { get; set; } = string.Empty;
+        [JsonProperty("ctime")]
+        public string CreationTime { get; set; }
+        [JsonProperty("mtime")]
+        public string ModificationTime { get; set; }
+        [JsonProperty("block_end_time")]
+        public string BlockEndTime { get; set; }
+        [JsonProperty("msg_time")]
+        public string MessageTime { get; set; } = string.Empty;
+    }
 }

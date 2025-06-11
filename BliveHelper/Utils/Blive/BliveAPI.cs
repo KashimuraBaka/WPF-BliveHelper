@@ -92,7 +92,7 @@ namespace BliveHelper.Utils.Blive
         {
             try
             {
-                var response = await Client.PostAsync(url, ToUrlEncodeed(data));
+                var response = await Client.PostAsync(url, ToUrlEncoded(data));
                 return await response.Content.ReadFromJsonAsync<BliveResponse<T>>();
             }
             catch (Exception ex)
@@ -316,6 +316,54 @@ namespace BliveHelper.Utils.Blive
             return response != null && response.Code == 0;
         }
 
+        public async Task<string> BlockUser(int roomId, string userContent, int hour)
+        {
+            var requestData = new BliveBlockUserRequest()
+            {
+                RoomId = roomId,
+                Block = hour > 0 ? 1 : 0,
+                UserContent = userContent,
+                Hour = hour,
+                Csrf = CSRF,
+                CsrfToken = CSRF
+            };
+            var response = await PostFormUrlEncoded<object>("https://api.live.bilibili.com/liveact/room_block_user", requestData);
+            return response?.Message ?? string.Empty;
+        }
+
+        public async Task<string> RemoveBlockUser(int roomId, long blockId)
+        {
+            var requestData = new BliveRemoveBlockUserRequest()
+            {
+                RoomId = roomId,
+                BlockId = blockId,
+                Csrf = CSRF,
+                CsrfToken = CSRF
+            };
+            var response = await PostFormUrlEncoded<object>("https://api.live.bilibili.com/banned_service/v1/Silent/del_room_block_user", requestData);
+            return response?.Message ?? string.Empty;
+        }
+
+        public async Task<List<BliveBlockUserInfo>> GetBlockUsers(int roomId)
+        {
+            var currentPage = 1;
+            var blockUsers = new List<BliveBlockUserInfo>();
+            if (roomId > 0)
+            {
+                while (true)
+                {
+                    var response = await Get<BliveBlockUserInfo[]>($"https://api.live.bilibili.com/liveact/ajaxGetBlockList?roomid={roomId}&page={currentPage}");
+                    if (response?.Data == null || response.Data.Count() == 0)
+                    {
+                        break;
+                    }
+                    blockUsers.AddRange(response.Data);
+                    currentPage++;
+                }
+            }
+            return blockUsers;
+        }
+
         public async Task<BiliUIDInfo[]> NameToUID(IEnumerable<string> names)
         {
             if (names.Count() > 0)
@@ -339,7 +387,7 @@ namespace BliveHelper.Utils.Blive
             return string.Empty;
         }
 
-        private static FormUrlEncodedContent ToUrlEncodeed(object obj)
+        private static FormUrlEncodedContent ToUrlEncoded(object obj)
         {
             var dict = new Dictionary<string, string>();
             foreach (var prop in obj.GetType().GetProperties())
