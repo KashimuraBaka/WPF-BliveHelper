@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -19,6 +20,17 @@ namespace BliveHelper.Utils
             field = value;
             NotifyPropertyChanged(propertyName);
             return true;
+        }
+    }
+
+    public static class ObservableCollectionHelper
+    {
+        public static void AddRange<T>(this ObservableCollection<T> collection, IEnumerable<T> values)
+        {
+            foreach (var value in values)
+            {
+                collection.Add(value);
+            }
         }
     }
 }
