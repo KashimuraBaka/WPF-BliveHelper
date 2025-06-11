@@ -139,6 +139,7 @@
     <Compile Include="Utils\QRCoder\QRCodeGenerator\VersionInfoDetails.cs" />
     <Compile Include="Utils\Structs\Color.cs" />
     <Compile Include="Utils\Structs\CookieHelper.cs" />
+    <Compile Include="Utils\Structs\Danmaku.cs" />
     <Compile Include="Utils\Structs\HttpHelper.cs" />
     <Compile Include="Utils\Structs\ObjectHelper.cs" />
     <Compile Include="Utils\Structs\ObservableObject.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Utils\Obs\ObsWebSocketAPI.cs" />
     <Compile Include="Utils\Obs\ObsWebSocketModels.cs" />
     <Compile Include="Utils\Structs\RelayCommand.cs" />
+    <Compile Include="Utils\Structs\UnixTimestampConverter.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
     <Compile Include="Views\Components\TabItemModel.cs" />
     <Compile Include="Views\Pages\LiveBlockUsersPage.xaml.cs">

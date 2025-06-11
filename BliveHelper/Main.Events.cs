@@ -1,5 +1,6 @@
 ﻿using BilibiliDM_PluginFramework;
 using BliveHelper.Utils;
+using BliveHelper.Utils.Structs;
 using System;
 using System.IO;
 
@@ -17,6 +18,11 @@ namespace BliveHelper
             }
             // 初始化服务
             await ENV.InitServices();
+            // 如果启用服务则自动启用
+            if (ENV.Config.PluginEnabled)
+            {
+                Start();
+            }
         }
 
         public override void DeInit()
@@ -31,10 +37,14 @@ namespace BliveHelper
 
         public override void Start()
         {
+            base.Start();
+            ENV.Config.PluginEnabled = true;
         }
 
         public override void Stop()
         {
+            base.Stop();
+            ENV.Config.PluginEnabled = false;
         }
 
         private void OnConnected(object sender, ConnectedEvtArgs e)
@@ -47,6 +57,10 @@ namespace BliveHelper
 
         private void OnReceivedDanmaku(object sender, ReceivedDanmakuArgs e)
         {
+            if (e.Danmaku.MsgType is MsgTypeEnum.Comment)
+            {
+                AdminWindow.Dispatcher.Invoke(() => ENV.AddDanmaku(e.Danmaku));
+            }
         }
 
         private void OnReceivedRoomCount(object sender, ReceivedRoomCountArgs e)
