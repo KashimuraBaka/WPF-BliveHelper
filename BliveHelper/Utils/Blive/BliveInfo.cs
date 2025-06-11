@@ -31,13 +31,13 @@ namespace BliveHelper.Utils.Blive
             get => title;
             set => SetProperty(ref title, value);
         }
-        private string selectedArea = string.Empty;
+        private string selectedArea;
         public string SelectedArea
         {
             get => selectedArea;
             set => SetProperty(ref selectedArea, value);
         }
-        private string selectedGame = string.Empty;
+        private string selectedGame;
         public string SelectedGame
         {
             get => selectedGame;
@@ -81,9 +81,9 @@ namespace BliveHelper.Utils.Blive
                     var info = await ENV.BliveAPI.GetInfo();
                     if (info != null)
                     {
+                        SelectedArea = SelectedArea ?? info.ParentName;
+                        SelectedGame = SelectedGame ?? info.AreaV2Name;
                         Title = info.Title;
-                        SelectedArea = info.ParentName;
-                        SelectedGame = info.AreaV2Name;
                         IsStart = info.LiveStatus is BliveState.Live;
                         RoomId = info.RoomId;
                         UserName = info.UserName;
