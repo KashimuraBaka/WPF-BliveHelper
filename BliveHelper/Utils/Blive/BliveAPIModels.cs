@@ -224,16 +224,16 @@ namespace BliveHelper.Utils.Blive
 
     public class BliveRtmpInfo
     {
-        [JsonProperty("type")]
+        [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int Type { get; set; }
         [JsonProperty("addr")]
         public string ServerUrl { get; set; } = string.Empty;
         [JsonProperty("code")]
         public string Code { get; set; } = string.Empty;
-        [JsonProperty("new_link")]
-        public string NewLink { get; set; } = string.Empty;
-        [JsonProperty("provider")]
-        public string Provider { get; set; } = string.Empty;
+        [JsonProperty("new_link", NullValueHandling = NullValueHandling.Ignore)]
+        public string NewLink { get; set; }
+        [JsonProperty("provider", NullValueHandling = NullValueHandling.Ignore)]
+        public string Provider { get; set; }
     }
 
     public class BliveOperationOnBroadcastCode
@@ -286,5 +286,25 @@ namespace BliveHelper.Utils.Blive
         public string ReplayDmid { get; set; }
         [JsonProperty("statistics", NullValueHandling = NullValueHandling.Ignore)]
         public string Statistics { get; set; }
+    }
+
+    public class BliveStreamLine
+    {
+        [JsonProperty("cdn_name")]
+        public string CdnName { get; set; } = string.Empty;
+        [JsonProperty("checked")]   
+        public bool Checked { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; } = string.Empty;
+        [JsonProperty("src")]
+        public int Src { get; set; }
+    }
+
+    public class BliveStreamResponse
+    {
+        [JsonProperty("rtmp")]
+        public BliveRtmpInfo Rtmp { get; set; } = new BliveRtmpInfo();
+        [JsonProperty("stream_line")]
+        public List<BliveStreamLine> StreamLine { get; set; } = new List<BliveStreamLine>();
     }
 }

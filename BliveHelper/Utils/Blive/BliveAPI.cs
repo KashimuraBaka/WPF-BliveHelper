@@ -181,6 +181,12 @@ namespace BliveHelper.Utils.Blive
             return response?.Data;
         }
 
+        public async Task<BliveStreamResponse> GetLiveStremInfo(int roomId)
+        {
+            var response = await Get<BliveStreamResponse>($"https://api.live.bilibili.com/live_stream/v1/StreamList/get_stream_by_roomId?room_id={roomId}");
+            return response?.Data;
+        }
+
         /// <summary>
         /// 设置直播间标题
         /// </summary>
