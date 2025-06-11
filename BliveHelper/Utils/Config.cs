@@ -12,6 +12,13 @@ namespace BliveHelper.Utils
         [JsonIgnore]
         private bool Loaded { get; set; }
 
+        private bool pluginEnabled;
+        public bool PluginEnabled
+        {
+            get => pluginEnabled;
+            set => SetProperty(ref pluginEnabled, value);
+        }
+
         private Dictionary<string, string> cookies = new Dictionary<string, string>();
         public Dictionary<string, string> Cookies
         {
@@ -52,6 +59,7 @@ namespace BliveHelper.Utils
                     var config = JsonConvert.DeserializeObject<Config>(configString);
                     if (config != null)
                     {
+                        PluginEnabled = config.PluginEnabled;
                         Cookies = config.Cookies;
                         WebSocket.ServerUrl = config.webSocket.ServerUrl;
                         WebSocket.ServerKey = config.webSocket.ServerKey;
