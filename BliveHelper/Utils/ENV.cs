@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using BliveHelper.Utils.Obs;
+using System.IO;
 using System.Reflection;
 
 namespace BliveHelper.Utils
@@ -12,6 +13,13 @@ namespace BliveHelper.Utils
         public static string AppDllFilePath { get; } = new FileInfo(AppDllFileName).DirectoryName;
         public static string ConfigDirectory { get; } = Path.Combine(AppDllFilePath, "BliveHelper");
         public static string ConfigFileName { get; } = Path.Combine(ConfigDirectory, "config.json");
+
+        public static ObsWebSocketAPI WebSocket { get; } = new ObsWebSocketAPI();
+
+        public static void StartWebSocket()
+        {
+            WebSocket.Connect(Config.WebSocket.ServerUrl, Config.WebSocket.ServerKey);
+        }
 
         public static void Log(string message) => DanMuPlugin?.Log(message);
     }
