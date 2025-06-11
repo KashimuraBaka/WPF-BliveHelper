@@ -44,7 +44,6 @@ namespace BliveHelper.Views.Windows
             {
                 SetProperty(ref scanQR, value);
                 NotifyPropertyChanged(nameof(ShowSignOutButton));
-                if (value) RefreshesQRCode();
             }
         }
         private BitmapImage qrCodeImage;
@@ -97,6 +96,7 @@ namespace BliveHelper.Views.Windows
             // 添加标签页
             Pages.Add(new TabItemModel("基本信息", new LiveSettingsPage()));
             Pages.Add(new TabItemModel("封面设置", new LiveCoverSettingsPage()));
+            Pages.Add(new TabItemModel("用户封禁", new LiveBlockUsersPage()));
             Pages.Add(new TabItemModel("OBS插件", new ObsSettingsPage()));
             SelectedPage = Pages.First();
         }
@@ -144,7 +144,7 @@ namespace BliveHelper.Views.Windows
             NotifyPropertyChanged(nameof(WebSocketStateText));
         }
 
-        private void SignOut(object _)
+        private void SignOut()
         {
             var result = MessageBox.Show("确定要退出登录?", "注销", MessageBoxButton.OKCancel, MessageBoxImage.Question);
             if (result is MessageBoxResult.OK)
@@ -161,7 +161,7 @@ namespace BliveHelper.Views.Windows
             }
         }
 
-        private async void SendDanmu(object _)
+        private async void SendDanmu()
         {
             DanmuEnable = false;
             if (Info.RoomId > 0 && !string.IsNullOrEmpty(DanmuMessage) && await ENV.BliveAPI.SendDanmu(Info.RoomId, DanmuMessage))

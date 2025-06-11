@@ -84,7 +84,7 @@ namespace BliveHelper.Views.Pages
             }
         }
 
-        private async void ChangedSetting(object _)
+        private async void ChangedSetting()
         {
             if (!string.IsNullOrEmpty(Info.SelectedArea) && !string.IsNullOrEmpty(Info.SelectedGame))
             {
@@ -104,7 +104,7 @@ namespace BliveHelper.Views.Pages
             }
         }
 
-        private async void ActionLive(object value)
+        private async void ActionLive()
         {
             StartEnable = false;
             if (!Info.IsStart)

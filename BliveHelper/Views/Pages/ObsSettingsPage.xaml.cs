@@ -51,7 +51,7 @@ namespace BliveHelper.Views.Pages
             ServerKey = ENV.Config.WebSocket.ServerKey;
         }
 
-        private async void SaveWebsocketSetting(object _)
+        private async void SaveWebsocketSetting()
         {
             SaveEnable = false;
             {
