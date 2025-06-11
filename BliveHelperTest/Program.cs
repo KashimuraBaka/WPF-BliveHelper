@@ -1,14 +1,18 @@
 ﻿using BliveHelper;
+using System;
+using System.Threading.Tasks;
 
 namespace BliveHelperTest
 {
-    internal class Program
+    public class Program
     {
-        static void Main(string[] _)
+        [STAThread]
+        public static void Main(string[] _)
         {
             var main = new Main();
             main.Inited();
-            main.Admin();
+            Task.Delay(1000).Wait();
+            main.Debugindow();
         }
     }
 }

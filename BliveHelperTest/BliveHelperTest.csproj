@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{73444445-1D5C-4BFE-A9F6-22474D674285}</ProjectGuid>
+    <ProjectGuid>{64286785-D02B-41F9-8805-8C9FFA5F33C3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>BliveHelperTest</RootNamespace>
     <AssemblyName>BliveHelperTest</AssemblyName>
@@ -40,6 +40,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
