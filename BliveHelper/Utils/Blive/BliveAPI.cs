@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -169,7 +170,7 @@ namespace BliveHelper.Utils.Blive
         public async Task<BliveArea[]> GetAreas()
         {
             var response = await Get<BliveArea[]>("https://api.live.bilibili.com/room/v1/Area/getList?show_pinyin=1");
-            return response?.Data ?? new BliveArea[] { };
+            return response?.Data ?? Array.Empty<BliveArea>();
         }
 
         /// <summary>
@@ -220,7 +221,7 @@ namespace BliveHelper.Utils.Blive
         public async Task<BliveCoverInfo[]> GetLiveCovers()
         {
             var response = await Get<BliveCoverInfo[]>("https://api.live.bilibili.com/room/v1/Cover/get_list");
-            return response?.Data ?? new BliveCoverInfo[] { };
+            return response?.Data ?? Array.Empty<BliveCoverInfo>();
         }
 
         public async Task<string> ReplaceLiveCover(int roomId, int coverId, string coverUrl)
@@ -313,6 +314,17 @@ namespace BliveHelper.Utils.Blive
             };
             var response = await PostFormUrlEncoded<JObject>("https://api.live.bilibili.com/msg/send", requestData);
             return response != null && response.Code == 0;
+        }
+
+        public async Task<BiliUIDInfo[]> NameToUID(IEnumerable<string> names)
+        {
+            if (names.Count() > 0)
+            {
+                var namesParam = string.Join(",", names);
+                var response = await Get<BiliUIDsResponse>($"https://api.bilibili.com/x/polymer/web-dynamic/v1/name-to-uid?names={namesParam}");
+                return response?.Data?.UIDs ?? Array.Empty<BiliUIDInfo>();
+            }
+            return Array.Empty<BiliUIDInfo>();
         }
 
         private string GetCookie(string name)

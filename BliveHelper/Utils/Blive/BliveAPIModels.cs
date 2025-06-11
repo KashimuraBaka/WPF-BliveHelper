@@ -323,4 +323,18 @@ namespace BliveHelper.Utils.Blive
         [JsonProperty("type")]
         public string Type { get; set; } = "cover";
     }
+
+    public class BiliUIDInfo
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+        [JsonProperty("uid")]
+        public long UID { get; set; }
+    }
+
+    public class BiliUIDsResponse
+    {
+        [JsonProperty("uid_list")]
+        public BiliUIDInfo[] UIDs { get; set; } = Array.Empty<BiliUIDInfo>();
+    }
 }
