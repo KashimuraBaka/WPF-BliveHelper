@@ -1,7 +1,5 @@
 using BliveHelper.Utils.Structs;
 using System;
-using static BliveHelper.Utils.QRCoder.Base64QRCode;
-using static BliveHelper.Utils.QRCoder.QRCodeGenerator;
 
 namespace BliveHelper.Utils.QRCoder
 {
