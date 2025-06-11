@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:BliveHelper.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:windows="clr-namespace:BliveHelper.ViewModels.Windows"
-    Title="{Binding UserStateText, StringFormat=直播间助手 {0} By: Kashimura}"
+    Title="{Binding UserStateText, StringFormat=直播间助手 {0}}"
     Width="750"
     Height="500"
     d:DataContext="{d:DesignInstance Type=windows:MainWindowViewModel}"
@@ -17,132 +17,72 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
     <Grid>
-        <StackPanel Grid.Column="0" Margin="10,5,10,10">
-            <StackPanel.Resources>
-                <Style TargetType="{x:Type GroupBox}">
-                    <Setter Property="Margin" Value="0,5,0,0" />
-                    <Setter Property="Padding" Value="5,2" />
-                </Style>
-                <Style TargetType="{x:Type DockPanel}">
-                    <Setter Property="Margin" Value="0,10,0,0" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                </Style>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="Margin" Value="0,0,10,0" />
-                    <Setter Property="Width" Value="100" />
-                </Style>
-            </StackPanel.Resources>
-            <GroupBox Header="OBS 自动设置 (OBS 界面 &gt; 工具 &gt; WebSocket 服务器设置)">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <DockPanel Grid.ColumnSpan="4" HorizontalAlignment="Left">
-                        <TextBlock Width="Auto" Text="OBS 状态" />
-                        <TextBlock Width="Auto" Text="{Binding WebSocketStateText}" />
-                    </DockPanel>
-                    <DockPanel Grid.Row="1" Grid.Column="0">
-                        <TextBlock Width="Auto" Text="WebSokcet 服务器地址" />
-                        <TextBox Text="{Binding ServerUrl}" />
-                    </DockPanel>
-                    <DockPanel Grid.Row="1" Grid.Column="2">
-                        <TextBlock Width="Auto" Text="服务器密码" />
-                        <components:PasswordBox Password="{Binding ServerKey}" />
-                    </DockPanel>
-                    <DockPanel Grid.Row="1" Grid.Column="3">
-                        <Button Margin="5,0,0,0" Padding="0" Command="{Binding SaveWebsocketSettingCommand}" Content="保存" />
-                    </DockPanel>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="直播间信息">
-                <StackPanel>
-                    <DockPanel>
-                        <TextBlock VerticalAlignment="Center" Text="房间号" />
-                        <TextBlock Width="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding RoomIdText}" />
-                        <Button
-                            Width="32"
-                            Padding="0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Command="{Binding SignOutCommand}"
-                            Content="注销"
-                            Visibility="{Binding ShowSignOutButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    </DockPanel>
-                    <StackPanel Visibility="{Binding IsStart, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <DockPanel>
-                            <TextBlock Text="服务器地址" />
-                            <TextBox IsReadOnly="True" Text="{Binding StreamServerUrl}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <TextBlock Text="推流码" />
-                            <components:PasswordBox IsReadOnly="True" Password="{Binding StreamServerKey}" />
-                        </DockPanel>
-                        <DockPanel>
-                            <TextBlock Text="身份码" />
-                            <components:PasswordBox IsReadOnly="True" Password="{Binding BroadcastCode}" />
-                        </DockPanel>
-                    </StackPanel>
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="直播间设置">
-                <StackPanel>
-                    <DockPanel>
-                        <TextBlock Text="直播间标题" />
-                        <TextBox Text="{Binding Title}" />
-                    </DockPanel>
-                    <DockPanel>
-                        <TextBlock Text="直播间分区" />
-                        <ComboBox ItemsSource="{Binding LiveAreas}" SelectedValue="{Binding SelectedArea}" />
-                    </DockPanel>
-                    <DockPanel>
-                        <TextBlock Text="游戏内容" />
-                        <ComboBox ItemsSource="{Binding LiveGames}" SelectedValue="{Binding SelectedGame}" />
-                    </DockPanel>
-                    <!--  按钮  -->
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="10" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Button
-                            Grid.Column="0"
-                            Padding="16,8"
-                            Command="{Binding ChangedSettingCommand}"
-                            Content="修改"
-                            IsEnabled="{Binding IsStart}" />
-                        <Button Grid.Column="2" Padding="16,8" Command="{Binding ActionLiveCommand}" Content="{Binding ActionButtonText}" />
-                    </Grid>
-                </StackPanel>
-            </GroupBox>
-            <GroupBox Header="弹幕发送">
-                <Grid Margin="0,5,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Width="Auto" VerticalAlignment="Center" Text="弹幕内容" />
-                    <TextBox Grid.Column="1" IsEnabled="{Binding DanmuEnable}" Text="{Binding DanmuMessage}" />
-                    <Button
-                        Grid.Column="2"
-                        Width="60"
-                        Margin="5,0,0,0"
-                        Command="{Binding SendDanmuCommand}"
-                        Content="发送"
-                        IsEnabled="{Binding DanmuEnable}" />
-                </Grid>
-            </GroupBox>
-        </StackPanel>
+        <Grid Margin="8,8,8,6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Margin="0,0,0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <DockPanel Grid.Column="0" HorizontalAlignment="Left">
+                    <TextBlock Margin="0,0,5,0" Text="房间号" />
+                    <TextBlock Text="{Binding RoomIdText}" />
+                </DockPanel>
+                <DockPanel Grid.Column="1" HorizontalAlignment="Left">
+                    <TextBlock Margin="0,0,5,0" Text="OBS 状态:" />
+                    <TextBlock Text="{Binding WebSocketStateText}" />
+                </DockPanel>
+                <Button
+                    Grid.Column="2"
+                    Margin="5,0,0,0"
+                    Padding="2,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Command="{Binding SignOutCommand}"
+                    Content="退出登录"
+                    Visibility="{Binding ShowSignOutButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </Grid>
+            <TabControl Grid.Row="1" ItemsSource="{Binding Pages, RelativeSource={RelativeSource AncestorType=Window}}" SelectedItem="{Binding SelectedPage, RelativeSource={RelativeSource AncestorType=Window}}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Header}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{Binding Content}" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+            <Grid Grid.Row="2" Margin="0,5,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    Width="Auto"
+                    Margin="0,0,5,0"
+                    VerticalAlignment="Center"
+                    Text="直播间聊天" />
+                <TextBox Grid.Column="1" IsEnabled="{Binding DanmuEnable}" Text="{Binding DanmuMessage}" />
+                <Button
+                    Grid.Column="2"
+                    Width="60"
+                    Margin="5,0,0,0"
+                    Command="{Binding SendDanmuCommand}"
+                    Content="发送"
+                    IsEnabled="{Binding DanmuEnable}" />
+            </Grid>
+        </Grid>
         <!--  二维码  -->
-        <Border Padding="10" Background="#55000000" Visibility="{Binding ScanQR, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Border Grid.RowSpan="3" Padding="10" Background="#55000000" Visibility="{Binding ScanQR, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />

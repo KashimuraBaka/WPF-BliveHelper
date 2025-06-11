@@ -1,6 +1,5 @@
 ﻿using BliveHelper.Utils;
 using BliveHelper.Utils.Blive;
-using BliveHelper.Utils.Obs;
 using BliveHelper.Utils.Structs;
 using System;
 using System.Collections.Generic;
@@ -16,11 +15,9 @@ namespace BliveHelper.ViewModels.Windows
 {
     public class MainWindowViewModel : ObservableObject
     {
-        private Window Window { get; }
-        private BliveAPI BliveAPI { get; } = new BliveAPI();
+        public BliveAPI BliveAPI { get; } = new BliveAPI();
         private List<BliveArea> BaseLiveAreas { get; } = new List<BliveArea>();
         private long RefreshTime { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        private ObsWebSocketAPI WebSocket { get; } = new ObsWebSocketAPI();
 
         // 扫码
         private bool scanQR;
@@ -41,19 +38,6 @@ namespace BliveHelper.ViewModels.Windows
             get => qrCodeMessage;
             set => SetProperty(ref qrCodeMessage, value);
         }
-        // WebSocket 设置
-        private string serverUrl = string.Empty;
-        public string ServerUrl
-        {
-            get => serverUrl;
-            set => SetProperty(ref serverUrl, value);
-        }
-        private string serverKey = string.Empty;
-        public string ServerKey
-        {
-            get => serverKey;
-            set => SetProperty(ref serverKey, value);
-        }
         // 直播间信息
         private bool isStart;
         public bool IsStart
@@ -73,7 +57,7 @@ namespace BliveHelper.ViewModels.Windows
             get => roomId;
             set => SetProperty(ref roomId, value);
         }
-        private string title = string.Empty;
+        private string title;
         public string Title
         {
             get => title;
@@ -110,59 +94,48 @@ namespace BliveHelper.ViewModels.Windows
             get => broadcastCode;
             set => SetProperty(ref broadcastCode, value);
         }
-        // 弹幕信息
-        private bool danmuEnable = true;
-        public bool DanmuEnable
-        {
-            get => danmuEnable;
-            set => SetProperty(ref danmuEnable, value);
-        }
         private string danmuMessage = string.Empty;
         public string DanmuMessage
         {
             get => danmuMessage;
             set => SetProperty(ref danmuMessage, value);
         }
+        // 控件属性
+        private bool startEnable = true;
+        public bool StartEnable
+        {
+            get => startEnable;
+            set => SetProperty(ref startEnable, value);
+        }
+        private bool danmuEnable = true;
+        public bool DanmuEnable
+        {
+            get => danmuEnable;
+            set => SetProperty(ref danmuEnable, value);
+        }
         // 命令
         public ICommand SignOutCommand => new RelayCommand(SignOut);
-        public ICommand ActionLiveCommand => new RelayCommand(ActionLive);
-        public ICommand SaveWebsocketSettingCommand => new RelayCommand(SaveWebsocketSetting);
         public ICommand SendDanmuCommand => new RelayCommand(SendDanmu);
+        public ICommand ActionLiveCommand => new RelayCommand(ActionLive);
         public ICommand ChangedSettingCommand => new RelayCommand(ChangedSetting);
 
         public ObservableCollection<string> LiveAreas { get; } = new ObservableCollection<string>();
         public ObservableCollection<string> LiveGames { get; } = new ObservableCollection<string>();
         public bool ShowSignOutButton => !ScanQR;
-        public string WebSocketConnectText => WebSocket.IsOpen ? "已连接" : "已断开";
-        public string WebSocketVersionText => WebSocket.IsOpen ? $"[软件版本: {WebSocket.ObsStudioVerison}, 插件版本: {WebSocket.ObsPluginVersion}]" : string.Empty;
+        public string WebSocketConnectText => ENV.WebSocket.IsOpen ? "已连接" : "已断开";
+        public string WebSocketVersionText => ENV.WebSocket.IsOpen ? $"[OBS版本: {ENV.WebSocket.ObsStudioVerison}, 插件版本: {ENV.WebSocket.ObsPluginVersion}]" : string.Empty;
         public string WebSocketStateText => $"{WebSocketConnectText} {WebSocketVersionText}";
         public string UserStateText => string.IsNullOrEmpty(UserName) ? string.Empty : $"(已登录: {UserName})";
         public string RoomIdText => IsStart ? $"{RoomId} [正在直播]" : (RoomId > 0 ? RoomId.ToString() : "未登录");
         public string ActionButtonText => IsStart ? "停止直播" : "开始直播";
         public int GameAreaID => BaseLiveAreas.FirstOrDefault(x => x.Name == SelectedArea)?.List.FirstOrDefault(x => x.Name == SelectedGame)?.Id ?? 0;
 
-        public MainWindowViewModel(Window window)
+        public MainWindowViewModel()
         {
-            // 初始化窗口
-            Window = window;
             // 监听属性变化
             PropertyChanged += MainWindowViewModel_PropertyChanged;
             // 监听 WebSokcet 事件
-            WebSocket.OnStateChanged += WebSocket_OnStateChanged;
-            // 初始化 WebSocket 设置
-            ServerUrl = ENV.Config.WebSocket.ServerUrl;
-            ServerKey = ENV.Config.WebSocket.ServerKey;
-            WebSocket.Connect(ServerUrl, ServerKey);
-            // 如果没有 Cookies 则显示二维码扫码登录
-            if (ENV.Config.Cookies.Count == 0)
-            {
-                RefreshesQRCode();
-            }
-            else
-            {
-                BliveAPI.Cookies = ENV.Config.Cookies;
-                Window.Dispatcher.Invoke(RefreshLiveInfo);
-            }
+            ENV.WebSocket.OnStateChanged += WebSocket_OnStateChanged;
         }
 
         private void MainWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -172,12 +145,6 @@ namespace BliveHelper.ViewModels.Windows
                 case nameof(IsStart):
                     NotifyPropertyChanged(nameof(RoomIdText));
                     NotifyPropertyChanged(nameof(ActionButtonText));
-                    if (!IsStart)
-                    {
-                        StreamServerUrl = string.Empty;
-                        StreamServerKey = string.Empty;
-                        BroadcastCode = string.Empty;
-                    }
                     break;
                 case nameof(ScanQR):
                     NotifyPropertyChanged(nameof(ShowSignOutButton));
@@ -214,14 +181,18 @@ namespace BliveHelper.ViewModels.Windows
 
         private async Task ActionLive(object value)
         {
+            StartEnable = false;
             if (!IsStart)
             {
                 if (!string.IsNullOrEmpty(SelectedArea) && !string.IsNullOrEmpty(SelectedGame))
                 {
-                    if (await GetRtmpInfo())
+                    var rtmp = await BliveAPI.StartLive(RoomId, Title, GameAreaID);
+                    if (rtmp != null && !string.IsNullOrEmpty(rtmp.ServerUrl))
                     {
                         IsStart = true;
-                        WebSocket.StartStream();
+                        StreamServerUrl = rtmp.ServerUrl;
+                        StreamServerKey = rtmp.Code;
+                        ENV.WebSocket.SetStreamServiceSettings(StreamServerUrl, StreamServerKey);
                     }
                     else
                     {
@@ -239,30 +210,27 @@ namespace BliveHelper.ViewModels.Windows
                 if (res != null && res.Change == 1)
                 {
                     IsStart = false;
-                    WebSocket.StopStream();
+                    ENV.WebSocket.StopStream();
                 }
             }
+            StartEnable = true;
         }
 
         private void SignOut(object _)
         {
-            ENV.Config.Cookies = new Dictionary<string, string>();
-            BliveAPI.Cookies = new Dictionary<string, string>();
-            IsStart = false;
-            ScanQR = true;
-            UserName = string.Empty;
-            RoomId = default;
-            Title = string.Empty;
-            SelectedArea = string.Empty;
-            SelectedGame = string.Empty;
-        }
-
-        private void SaveWebsocketSetting(object _)
-        {
-            ENV.Config.WebSocket.ServerUrl = ServerUrl;
-            ENV.Config.WebSocket.ServerKey = ServerKey;
-            // 重连 WebSocket 服务
-            WebSocket.Connect(ServerUrl, ServerKey);
+            var result = MessageBox.Show("确定要退出登录?", "注销", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+            if (result is MessageBoxResult.OK)
+            {
+                ENV.Config.Cookies = new Dictionary<string, string>();
+                BliveAPI.Cookies = new Dictionary<string, string>();
+                IsStart = false;
+                ScanQR = true;
+                UserName = string.Empty;
+                RoomId = default;
+                Title = string.Empty;
+                SelectedArea = string.Empty;
+                SelectedGame = string.Empty;
+            }
         }
 
         private async void SendDanmu(object _)
@@ -337,7 +305,7 @@ namespace BliveHelper.ViewModels.Windows
             }
         }
 
-        private async void RefreshLiveInfo()
+        public async void RefreshLiveInfo()
         {
             // 添加直播分区
             BaseLiveAreas.Clear();
@@ -360,38 +328,25 @@ namespace BliveHelper.ViewModels.Windows
                 var info = await BliveAPI.GetInfo();
                 if (info != null)
                 {
+                    IsStart = info.LiveStatus is BliveState.Live;
                     RoomId = info.RoomId;
                     UserName = info.UserName;
-                    // 如果当前未获取开播链接, 则进行获取开播链接
-                    if (info.LiveStatus is BliveState.Live && !IsStart && await GetRtmpInfo())
+                    // 获取推流码信息
+                    var streamInfo = await BliveAPI.GetLiveStremInfo(info.RoomId);
+                    if (streamInfo != null)
                     {
-                        IsStart = true;
+                        StreamServerUrl = streamInfo.Rtmp.ServerUrl;
+                        StreamServerKey = streamInfo.Rtmp.Code;
+                    }
+                    // 获取身份码信息
+                    var broadcastCode = await BliveAPI.GetOperationOnBroadcastCode();
+                    if (!string.IsNullOrEmpty(broadcastCode))
+                    {
+                        BroadcastCode = broadcastCode;
                     }
                 }
-                await Task.Delay(1000);
+                await Task.Delay(5000);
             }
-        }
-
-        private async Task<bool> GetRtmpInfo()
-        {
-            // 设置直播间
-            var rtmp = await BliveAPI.StartLive(RoomId, Title, GameAreaID);
-            if (rtmp is null || string.IsNullOrEmpty(rtmp.ServerUrl))
-            {
-                return false;
-            }
-            StreamServerUrl = rtmp.ServerUrl;
-            StreamServerKey = rtmp.Code;
-            WebSocket.SetStreamServiceSettings(StreamServerUrl, StreamServerKey);
-            // 获取身份码
-            var broadcastCode = await BliveAPI.GetOperationOnBroadcastCode();
-            if (string.IsNullOrEmpty(broadcastCode))
-            {
-                return false;
-            }
-            BroadcastCode = broadcastCode;
-
-            return true;
         }
     }
 }
