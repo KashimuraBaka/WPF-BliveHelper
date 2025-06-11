@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -20,24 +19,6 @@ namespace BliveHelper.Utils
             field = value;
             NotifyPropertyChanged(propertyName);
             return true;
-        }
-    }
-
-    public class ObservableObjectNotify : ObservableObject, IDisposable
-    {
-        public ObservableObjectNotify()
-        {
-            PropertyChanged += OnPropertyChanged;
-        }
-
-        protected virtual void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-        }
-
-        public void Dispose()
-        {
-            PropertyChanged -= OnPropertyChanged;
-            GC.SuppressFinalize(this);
         }
     }
 }
