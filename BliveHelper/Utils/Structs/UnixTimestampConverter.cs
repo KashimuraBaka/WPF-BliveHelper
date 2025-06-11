@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace BliveHelper.Utils.Structs
@@ -11,7 +10,6 @@ namespace BliveHelper.Utils.Structs
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            Debug.WriteLine(reader.Value);
             return DateTimeOffset.FromUnixTimeSeconds((long)reader.Value).LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
