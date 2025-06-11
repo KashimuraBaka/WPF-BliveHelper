@@ -2,6 +2,7 @@
 using BliveHelper.Utils.Blive;
 using BliveHelper.Utils.Obs;
 using BliveHelper.Utils.Structs;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -34,22 +35,35 @@ namespace BliveHelper.Utils
             WebSocket.Connect(Config.WebSocket.ServerUrl, Config.WebSocket.ServerKey);
         }
 
-        public static async void AddDanmaku(DanmakuModel danmaku)
+        public static async void AddDanmaku(DanmakuModel danmakuRawData)
         {
-            var danmakuData = danmaku.RawDataJToken.ToObject<DanmakuRawData>().Data;
-            // 如果之前记录已经获取到 UID, 则直接覆盖
-            var hasUIDUser = Danmakus.FirstOrDefault(x => x.UserId != 0 && x.UserName == danmaku.UserName);
-            if (hasUIDUser != null)
+            Danmaku danmaku;
+            if (danmakuRawData.RawDataJToken != null)
             {
-                danmakuData.UserId = hasUIDUser.UserId;
+                danmaku = danmakuRawData.RawDataJToken.ToObject<DanmakuRawData>().Data;
+                // 如果之前记录已经获取到 UID, 则直接覆盖
+                var hasUIDUser = Danmakus.FirstOrDefault(x => x.UserId != 0 && x.UserName == danmaku.UserName);
+                if (hasUIDUser != null)
+                {
+                    danmaku.UserId = hasUIDUser.UserId;
+                }
+                else
+                {
+                    var uids = await BliveAPI.NameToUID(new string[] { danmaku.UserName });
+                    danmaku.UserId = uids.FirstOrDefault()?.UID ?? 0;
+                }
             }
             else
             {
-                var uids = await BliveAPI.NameToUID(new string[] { danmaku.UserName });
-                danmakuData.UserId = uids.FirstOrDefault()?.UID ?? 0;
+                danmaku = new Danmaku()
+                {
+                    MessageTime = DateTimeOffset.Now.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss"),
+                    UserName = danmakuRawData.UserName,
+                    Message = danmakuRawData.CommentText,
+                };
             }
             // 记录当前弹幕
-            Danmakus.Insert(0, danmakuData);
+            Danmakus.Insert(0, danmaku);
             if (Danmakus.Count > 100)
             {
                 Danmakus.RemoveAt(Danmakus.Count - 1);
