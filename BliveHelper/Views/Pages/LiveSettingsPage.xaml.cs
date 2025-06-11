@@ -56,7 +56,7 @@ namespace BliveHelper.Views.Pages
             }
         }
 
-        private void Info_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Info_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -67,15 +67,18 @@ namespace BliveHelper.Views.Pages
                     // 切换分区时, 刷新游戏列表
                     if (!string.IsNullOrEmpty(Info.SelectedArea))
                     {
-                        LiveGames.Clear();
-                        var area = BaseLiveAreas.FirstOrDefault(x => x.Name == Info.SelectedArea);
-                        if (area != null)
+                        Dispatcher.Invoke(() =>
                         {
-                            foreach (var game in area.List)
+                            LiveGames.Clear();
+                            var area = BaseLiveAreas.FirstOrDefault(x => x.Name == Info.SelectedArea);
+                            if (area != null)
                             {
-                                LiveGames.Add(game.Name);
+                                foreach (var game in area.List)
+                                {
+                                    LiveGames.Add(game.Name);
+                                }
                             }
-                        }
+                        });
                     }
                     break;
             }
