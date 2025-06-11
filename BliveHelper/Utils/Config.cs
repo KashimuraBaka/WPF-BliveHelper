@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace BliveHelper.Utils
 {
-    public class Config : ObservableObjectNotify
+    public class Config : ObservableObject
     {
+        [JsonIgnore]
+        private bool Loaded { get; set; }
+
         private Dictionary<string, string> cookies = new Dictionary<string, string>();
         public Dictionary<string, string> Cookies
         {
@@ -25,39 +28,46 @@ namespace BliveHelper.Utils
 
         public Config()
         {
+            // 如果参数属性发生变动
+            PropertyChanged += OnPropertyChanged;
             WebSocket.PropertyChanged += OnPropertyChanged;
         }
 
-        protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected async void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (Loaded && !string.IsNullOrEmpty(ENV.ConfigFileName))
+            {
+                await SaveAsync();
+            }
         }
 
         public async Task LoadAsync()
         {
             if (File.Exists(ENV.ConfigFileName))
             {
-                using (var reader = new StreamReader(ENV.ConfigFileName, Encoding.UTF8))
+                using (var fs = new FileStream(ENV.ConfigFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var reader = new StreamReader(fs, Encoding.UTF8))
                 {
                     var configString = await reader.ReadToEndAsync();
                     var config = JsonConvert.DeserializeObject<Config>(configString);
                     if (config != null)
                     {
                         Cookies = config.Cookies;
-                        WebSocket = config.webSocket;
+                        WebSocket.ServerUrl = config.webSocket.ServerUrl;
+                        WebSocket.ServerKey = config.webSocket.ServerKey;
                     }
                 }
             }
+            Loaded = true;
         }
 
         public async Task SaveAsync()
         {
-            using (var fs = new FileStream(ENV.ConfigFileName, FileMode.OpenOrCreate, FileAccess.Write))
+            using (var fs = new FileStream(ENV.ConfigFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+            using (var sw = new StreamWriter(fs, Encoding.UTF8))
             {
                 fs.SetLength(0);
-                using (var sw = new StreamWriter(fs, Encoding.UTF8))
-                {
-                    await sw.WriteAsync(JsonConvert.SerializeObject(this, Formatting.Indented));
-                }
+                await sw.WriteAsync(JsonConvert.SerializeObject(this, Formatting.Indented));
             }
         }
     }
