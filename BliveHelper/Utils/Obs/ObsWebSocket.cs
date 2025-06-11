@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Net.WebSockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -35,6 +34,7 @@ namespace BliveHelper.Utils.Obs
 
     public class ObsWebSocket : IDisposable
     {
+        private SemaphoreSlim SemaphoreSlim { get; set; } = new SemaphoreSlim(1, 1);
         private ClientWebSocket WebSocket { get; set; } = new ClientWebSocket();
         private ConcurrentDictionary<string, ObsMethodHandler> ResponseMethods { get; } = new ConcurrentDictionary<string, ObsMethodHandler>();
         private string ServerKey { get; set; } = string.Empty;
@@ -99,7 +99,7 @@ namespace BliveHelper.Utils.Obs
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[Error] 读取消息异常: {ex.Message}");
+                ENV.Log($"[WebSocket] 读取消息异常: {ex.Message}");
                 return new ObsResponseMessage(WebSocketMessageType.Close, string.Empty);
             }
         }
@@ -129,34 +129,42 @@ namespace BliveHelper.Utils.Obs
         {
             return Task.Run(async () =>
             {
-                if (WebSocket != null && WebSocket.State is WebSocketState.Open)
+                await SemaphoreSlim.WaitAsync();
+                try
                 {
-                    // 处理请求消息
-                    var requestData = new ObsRequestMessage<object>() { RequestType = method, RequestData = data };
-                    var message = new ObsData<ObsRequestMessage<object>>() { OperationCode = ObsMessageTypes.Request, Data = requestData };
-                    var messageStr = JsonConvert.SerializeObject(message);
-                    var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(messageStr));
-                    await WebSocket.SendAsync(arraySegment, WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None);
-                    // 发送后可以等待响应
-                    var tcs = new TaskCompletionSource<object>();
-                    ResponseMethods.TryAdd(requestData.RequestId, new ObsMethodHandler(tcs, typeof(T)));
-                    // 等待消息 
-                    try
+                    if (WebSocket != null && WebSocket.State is WebSocketState.Open)
                     {
-                        tcs.Task.Wait(timeout * 1000);
-                        // 如果消息未被取消则处理响应事件
-                        if (tcs.Task.IsCanceled)
+                        // 处理请求消息
+                        var requestData = new ObsRequestMessage<object>() { RequestType = method, RequestData = data };
+                        var message = new ObsData<ObsRequestMessage<object>>() { OperationCode = ObsMessageTypes.Request, Data = requestData };
+                        var messageStr = JsonConvert.SerializeObject(message);
+                        var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(messageStr));
+                        await WebSocket.SendAsync(arraySegment, WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None);
+                        // 发送后可以等待响应
+                        var tcs = new TaskCompletionSource<object>();
+                        ResponseMethods.TryAdd(requestData.RequestId, new ObsMethodHandler(tcs, typeof(T)));
+                        // 等待消息 
+                        try
+                        {
+                            tcs.Task.Wait(timeout * 1000);
+                            // 如果消息未被取消则处理响应事件
+                            if (tcs.Task.IsCanceled)
+                            {
+                                return default;
+                            }
+                            return tcs.Task.Result as T;
+                        }
+                        catch
                         {
                             return default;
                         }
-                        return tcs.Task.Result as T;
                     }
-                    catch
-                    {
-                        return default;
-                    }
+                    return default;
                 }
-                return default;
+                finally
+                {
+                    SemaphoreSlim?.Release();
+                }
             });
         }
 
@@ -183,14 +191,14 @@ namespace BliveHelper.Utils.Obs
                             }
                             else
                             {
-                                Debug.WriteLine($"Unknown Message: {message}");
+                                ENV.Log($"位置消息: {message}");
                             }
                             break;
                         case ObsMessageTypes.Event:
-                            Debug.WriteLine(message);
+                            ENV.Log(message);
                             break;
                         default:
-                            Debug.WriteLine($"Unknown Code: {messageObject.OperationCode}");
+                            ENV.Log($"未知 OBS 响应代码: {messageObject.OperationCode}");
                             break;
                     }
                 }
@@ -240,6 +248,8 @@ namespace BliveHelper.Utils.Obs
                 WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
                 WebSocket.Dispose();
             }
+            SemaphoreSlim.Dispose();
+            SemaphoreSlim = null;
             GC.SuppressFinalize(this);
         }
     }
