@@ -55,9 +55,9 @@ namespace BliveHelper.Utils.Obs
             });
         }
 
-        private void WebSocket_OnConnected(object sender, EventArgs e)
+        private async void WebSocket_OnConnected(object sender, EventArgs e)
         {
-            var obsVersion = GetVersion().Result;
+            var obsVersion = await GetVersion();
             ObsStudioVerison = obsVersion?.OBSStudioVersion ?? "Unknown";
             ObsPluginVersion = obsVersion?.ObsPluginVersion ?? "Unknown";
             OnStateChanged?.Invoke(this, IsOpen);
