@@ -79,7 +79,7 @@ namespace BliveHelper.Utils.Obs
             return default;
         }
 
-        public async void StartStream()
+        public async Task StartStream()
         {
             if (WebSocket != null)
             {
@@ -87,7 +87,7 @@ namespace BliveHelper.Utils.Obs
             }
         }
 
-        public async void StopStream()
+        public async Task StopStream()
         {
             if (WebSocket != null)
             {
@@ -104,15 +104,16 @@ namespace BliveHelper.Utils.Obs
             return default;
         }
 
-        public async void SetStreamServiceSettings(string serverUrl, string serverKey)
+        public async Task<ObsStreamSettingsData> SetStreamServiceSettings(string serverUrl, string serverKey)
         {
             if (WebSocket != null)
             {
                 var data = new ObsStreamSettingsData() { Type = "rtmp_custom" };
                 data.Settings.ServerUrl = serverUrl;
                 data.Settings.ServerKey = serverKey;
-                await WebSocket.AsyncSendRequest<ObsStreamSettingsData>(nameof(SetStreamServiceSettings), data);
+                return await WebSocket.AsyncSendRequest<ObsStreamSettingsData>(nameof(SetStreamServiceSettings), data);
             }
+            return default;
         }
     }
 }
