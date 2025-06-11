@@ -39,5 +39,7 @@ namespace BliveHelper.Utils.Structs
                 _asyncExecute(parameter).ConfigureAwait(false);
             }
         }
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 }
