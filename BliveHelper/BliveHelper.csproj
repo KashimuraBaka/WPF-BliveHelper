@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>E:\WindowsData\Documents\弹幕姬\Plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -150,6 +150,9 @@
     <Compile Include="Utils\Structs\RelayCommand.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
     <Compile Include="Views\Components\TabItemModel.cs" />
+    <Compile Include="Views\Pages\LiveBlockUsersPage.xaml.cs">
+      <DependentUpon>LiveBlockUsersPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\LiveCoverSettingsPage.xaml.cs">
       <DependentUpon>LiveCoverSettingsPage.xaml</DependentUpon>
     </Compile>
@@ -173,6 +176,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\Pages\LiveBlockUsersPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\LiveCoverSettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

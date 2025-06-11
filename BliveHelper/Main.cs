@@ -2,7 +2,6 @@
 using BliveHelper.Utils;
 using BliveHelper.Views.Windows;
 using System;
-using System.Windows;
 
 namespace BliveHelper
 {
@@ -25,12 +24,6 @@ namespace BliveHelper
             ReceivedDanmaku += OnReceivedDanmaku;
             ReceivedRoomCount += OnReceivedRoomCount;
             AppDomain.CurrentDomain.UnhandledException += OnError;
-        }
-
-        public void Debugindow()
-        {
-            var app = new Application();
-            app.Run(AdminWindow);
         }
     }
 }
