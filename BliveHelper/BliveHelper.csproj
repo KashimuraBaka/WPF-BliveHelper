@@ -150,6 +150,9 @@
     <Compile Include="Utils\Structs\RelayCommand.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
     <Compile Include="Views\Components\TabItemModel.cs" />
+    <Compile Include="Views\Pages\LiveCoverSettingsPage.xaml.cs">
+      <DependentUpon>LiveCoverSettingsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\LiveSettingsPage.xaml.cs">
       <DependentUpon>LiveSettingsPage.xaml</DependentUpon>
     </Compile>
@@ -170,6 +173,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\Pages\LiveCoverSettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\LiveSettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

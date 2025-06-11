@@ -40,7 +40,12 @@ namespace BliveHelper.Views.Windows
         public bool ScanQR
         {
             get => scanQR;
-            set => SetProperty(ref scanQR, value);
+            set
+            {
+                SetProperty(ref scanQR, value);
+                NotifyPropertyChanged(nameof(ShowSignOutButton));
+                if (value) RefreshesQRCode();
+            }
         }
         private BitmapImage qrCodeImage;
         public BitmapImage QrCodeImage
@@ -87,11 +92,11 @@ namespace BliveHelper.Views.Windows
             DataContext = this;
             // 绑定事件
             Loaded += MainWindow_Loaded;
-            PropertyChanged += MainWindowViewModel_PropertyChanged;
             ENV.BliveInfo.PropertyChanged += BliveInfo_PropertyChanged;
             ENV.WebSocket.OnStateChanged += WebSocket_OnStateChanged;
             // 添加标签页
             Pages.Add(new TabItemModel("基本信息", new LiveSettingsPage()));
+            Pages.Add(new TabItemModel("封面设置", new LiveCoverSettingsPage()));
             Pages.Add(new TabItemModel("OBS插件", new ObsSettingsPage()));
             SelectedPage = Pages.First();
         }
@@ -116,17 +121,6 @@ namespace BliveHelper.Views.Windows
         {
             // 刷新二维码
             RefreshesQRCode();
-        }
-
-        private void MainWindowViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(ScanQR):
-                    NotifyPropertyChanged(nameof(ShowSignOutButton));
-                    if (ScanQR) RefreshesQRCode();
-                    break;
-            }
         }
 
         private void BliveInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)

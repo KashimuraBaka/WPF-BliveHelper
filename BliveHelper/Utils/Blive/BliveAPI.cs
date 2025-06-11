@@ -166,10 +166,10 @@ namespace BliveHelper.Utils.Blive
         /// 获取直播间分区
         /// </summary>
         /// <returns></returns>
-        public async Task<List<BliveArea>> GetAreas()
+        public async Task<BliveArea[]> GetAreas()
         {
-            var response = await Get<List<BliveArea>>("https://api.live.bilibili.com/room/v1/Area/getList?show_pinyin=1");
-            return response?.Data ?? new List<BliveArea>();
+            var response = await Get<BliveArea[]>("https://api.live.bilibili.com/room/v1/Area/getList?show_pinyin=1");
+            return response?.Data ?? new BliveArea[] { };
         }
 
         /// <summary>
@@ -182,6 +182,11 @@ namespace BliveHelper.Utils.Blive
             return response?.Data;
         }
 
+        /// <summary>
+        /// 直接获取 RTMP 流
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
         public async Task<BliveStreamResponse> GetLiveStremInfo(int roomId)
         {
             var response = await Get<BliveStreamResponse>($"https://api.live.bilibili.com/live_stream/v1/StreamList/get_stream_by_roomId?room_id={roomId}");
@@ -208,6 +213,37 @@ namespace BliveHelper.Utils.Blive
             return new SetLiveInfoResult(response?.Code == 0, response?.Message ?? string.Empty, response?.Data);
         }
 
+        /// <summary>
+        /// 获取直播封面
+        /// </summary>
+        /// <returns></returns>
+        public async Task<BliveCoverInfo[]> GetLiveCovers()
+        {
+            var response = await Get<BliveCoverInfo[]>("https://api.live.bilibili.com/room/v1/Cover/get_list");
+            return response?.Data ?? new BliveCoverInfo[] { };
+        }
+
+        public async Task<string> ReplaceLiveCover(int roomId, int coverId, string coverUrl)
+        {
+            var requestData = new BliveCoverRequestData()
+            {
+                RoomId = roomId,
+                PictureId = coverId,
+                Url = coverUrl,
+                Csrf = CSRF,
+                CsrfToken = CSRF
+            };
+            var response = await PostFormUrlEncoded<JObject[]>("https://api.live.bilibili.com/room/v1/Cover/replace", requestData);
+            return response?.Message ?? string.Empty;
+        }
+
+        /// <summary>
+        /// 开始直播
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <param name="name"></param>
+        /// <param name="areaId"></param>
+        /// <returns></returns>
         public async Task<BliveRtmpInfo> StartLive(int roomId, string name, int areaId)
         {
             // 设置直播间标题
@@ -224,6 +260,11 @@ namespace BliveHelper.Utils.Blive
             return response?.Data?.Rtmp;
         }
 
+        /// <summary>
+        /// 停止直播
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <returns></returns>
         public async Task<BliveStopResponse> StopLive(int roomId)
         {
             // 开始直播间
@@ -237,6 +278,10 @@ namespace BliveHelper.Utils.Blive
             return response?.Data;
         }
 
+        /// <summary>
+        /// 获取身份码
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> GetOperationOnBroadcastCode()
         {
             var requestData = new BliveOperationOnBroadcastCode()
@@ -251,6 +296,12 @@ namespace BliveHelper.Utils.Blive
             return response?.Data?.Code ?? string.Empty;
         }
 
+        /// <summary>
+        /// 发送弹幕
+        /// </summary>
+        /// <param name="roomId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public async Task<bool> SendDanmu(int roomId, string message)
         {
             var requestData = new BliveSendMessageRequest()

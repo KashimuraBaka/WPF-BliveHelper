@@ -36,6 +36,14 @@ namespace BliveHelper.Utils.Blive
         }
     }
 
+    public abstract class BliveCsrf
+    {
+        [JsonProperty("csrf")]
+        public string Csrf { get; set; } = string.Empty;
+        [JsonProperty("csrf_token")]
+        public string CsrfToken { get; set; } = string.Empty;
+    }
+
     public class BliveResponse<T>
     {
         [JsonProperty("code")]
@@ -142,7 +150,7 @@ namespace BliveHelper.Utils.Blive
         public int AreaType { get; set; }
     }
 
-    public class BliveStartRequestData
+    public class BliveStartRequestData : BliveCsrf
     {
         [JsonProperty("room_id")]
         public int RoomId { get; set; }
@@ -152,25 +160,17 @@ namespace BliveHelper.Utils.Blive
         public int AreaV2 { get; set; }
         [JsonProperty("backup_stream")]
         public int BackupStream { get; set; }
-        [JsonProperty("csrf_token")]
-        public string CsrfToken { get; set; } = string.Empty;
-        [JsonProperty("csrf")]
-        public string Csrf { get; set; } = string.Empty;
     }
 
-    public class BliveStopRequestData
+    public class BliveStopRequestData : BliveCsrf
     {
         [JsonProperty("room_id")]
         public int RoomId { get; set; }
         [JsonProperty("platform")]
         public string Platform { get; set; } = "android_link";
-        [JsonProperty("csrf_token")]
-        public string CsrfToken { get; set; } = string.Empty;
-        [JsonProperty("csrf")]
-        public string Csrf { get; set; } = string.Empty;
     }
 
-    public class BliveTitleRequestData
+    public class BliveTitleRequestData : BliveCsrf
     {
         [JsonProperty("room_id")]
         public int RoomId { get; set; }
@@ -180,10 +180,6 @@ namespace BliveHelper.Utils.Blive
         public string Title { get; set; } = string.Empty;
         [JsonProperty("area_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int AreaId { get; set; }
-        [JsonProperty("csrf_token")]
-        public string CsrfToken { get; set; } = string.Empty;
-        [JsonProperty("csrf")]
-        public string Csrf { get; set; } = string.Empty;
     }
 
     public class BliveTitleResponse
@@ -236,14 +232,10 @@ namespace BliveHelper.Utils.Blive
         public string Provider { get; set; }
     }
 
-    public class BliveOperationOnBroadcastCode
+    public class BliveOperationOnBroadcastCode : BliveCsrf
     {
         [JsonProperty("action")]
         public int Action { get; set; } = 1;
-        [JsonProperty("csrf_token")]
-        public string CsrfToken { get; set; } = string.Empty;
-        [JsonProperty("csrf")]
-        public string Csrf { get; set; } = string.Empty;
     }
 
     public class BliveOperationOnBroadcastCodeResponse
@@ -252,12 +244,8 @@ namespace BliveHelper.Utils.Blive
         public string Code { get; set; } = string.Empty;
     }
 
-    public class BliveSendMessageRequest
+    public class BliveSendMessageRequest : BliveCsrf
     {
-        [JsonProperty("csrf")]
-        public string Csrf { get; set; } = string.Empty;
-        [JsonProperty("csrf_token")]
-        public string CsrfToken { get; set; } = string.Empty;
         [JsonProperty("roomid")]
         public int RoomId { get; set; }
         [JsonProperty("msg")]
@@ -292,7 +280,7 @@ namespace BliveHelper.Utils.Blive
     {
         [JsonProperty("cdn_name")]
         public string CdnName { get; set; } = string.Empty;
-        [JsonProperty("checked")]   
+        [JsonProperty("checked")]
         public bool Checked { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; } = string.Empty;
@@ -306,5 +294,33 @@ namespace BliveHelper.Utils.Blive
         public BliveRtmpInfo Rtmp { get; set; } = new BliveRtmpInfo();
         [JsonProperty("stream_line")]
         public List<BliveStreamLine> StreamLine { get; set; } = new List<BliveStreamLine>();
+    }
+
+    public class BliveCoverInfo
+    {
+        [JsonProperty("id")]
+        public int ID { get; set; }
+        [JsonProperty("audit_status")]
+        public bool AuditStatus { get; set; }
+        [JsonProperty("audit_reason")]
+        public string AuditReason { get; set; } = string.Empty;
+        [JsonProperty("url")]
+        public string Url { get; set; } = string.Empty;
+        [JsonProperty("select_status")]
+        public bool SelectStatus { get; set; }
+        [JsonProperty("type")]
+        public string Type { get; set; } = string.Empty;
+    }
+
+    public class BliveCoverRequestData : BliveCsrf
+    {
+        [JsonProperty("room_id")]
+        public int RoomId { get; set; }
+        [JsonProperty("pic_id")]
+        public int PictureId { get; set; }
+        [JsonProperty("url")]
+        public string Url { get; set; } = string.Empty;
+        [JsonProperty("type")]
+        public string Type { get; set; } = "cover";
     }
 }
