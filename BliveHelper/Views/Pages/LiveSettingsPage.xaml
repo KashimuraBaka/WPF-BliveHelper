@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BliveHelper.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:windows="clr-namespace:BliveHelper.ViewModels.Windows"
     Padding="10"
     d:DataContext="{d:DesignInstance Type=local:LiveSettingsPage}"
     d:DesignHeight="450"
@@ -30,7 +29,7 @@
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0">
             <TextBlock Text="直播间标题" />
-            <TextBox Text="{Binding Title}" />
+            <TextBox Text="{Binding Info.Title}" />
         </DockPanel>
         <StackPanel Grid.Row="1">
             <Grid Margin="0,0,0,10">
@@ -40,20 +39,20 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="直播间分区" />
-                <ComboBox Grid.Column="1" ItemsSource="{Binding LiveAreas}" SelectedValue="{Binding SelectedArea}" />
-                <ComboBox Grid.Column="2" Margin="5,0,0,0" ItemsSource="{Binding LiveGames}" SelectedValue="{Binding SelectedGame}" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding Info.LiveAreas}" SelectedValue="{Binding Info.SelectedArea}" />
+                <ComboBox Grid.Column="2" Margin="5,0,0,0" ItemsSource="{Binding Info.LiveGames}" SelectedValue="{Binding Info.SelectedGame}" />
             </Grid>
             <DockPanel>
                 <TextBlock Text="服务器地址" />
-                <TextBox IsReadOnly="True" Text="{Binding StreamServerUrl}" />
+                <TextBox IsReadOnly="True" Text="{Binding Info.StreamServerUrl}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="推流码" />
-                <components:PasswordBox IsReadOnly="True" Password="{Binding StreamServerKey}" />
+                <components:PasswordBox IsReadOnly="True" Password="{Binding Info.StreamServerKey}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="身份码" />
-                <components:PasswordBox IsReadOnly="True" Password="{Binding BroadcastCode}" />
+                <components:PasswordBox IsReadOnly="True" Password="{Binding Info.BroadcastCode}" />
             </DockPanel>
         </StackPanel>
         <!--  按钮  -->
@@ -68,7 +67,7 @@
                 Padding="16,8"
                 Command="{Binding ChangedSettingCommand}"
                 Content="修改"
-                IsEnabled="{Binding IsStart}" />
+                IsEnabled="{Binding Info.IsStart}" />
             <Button
                 Grid.Column="2"
                 Padding="16,8"

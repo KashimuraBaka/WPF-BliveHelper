@@ -12,6 +12,7 @@ namespace BliveHelper.Utils
         public static DMPlugin DanMuPlugin { get; set; }
         public static Config Config { get; } = new Config();
         public static BliveAPI BliveAPI { get; } = new BliveAPI();
+        public static BliveInfo BliveInfo { get; } = new BliveInfo();
 
         public static string AppDllFileName { get; } = Assembly.GetExecutingAssembly().Location;
         public static string AppDllFilePath { get; } = new FileInfo(AppDllFileName).DirectoryName;

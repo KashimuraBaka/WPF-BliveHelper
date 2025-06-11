@@ -76,7 +76,7 @@ namespace BliveHelper.Utils.Blive
         public long RoomId { get; set; }
     }
 
-    public class BliveInfo
+    public class BliveInfoData
     {
         [JsonProperty("room_id")]
         public int RoomId { get; set; }

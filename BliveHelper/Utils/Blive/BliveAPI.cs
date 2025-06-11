@@ -18,6 +18,9 @@ namespace BliveHelper.Utils.Blive
     {
         private HttpClient Client { get; }
         private CookieContainer CookieContainer { get; } = new CookieContainer();
+        public bool IsLogin => CookieContainer.Count > 0;
+        public string UserID => GetCookie("DedeUserID");
+        public string CSRF => GetCookie("bili_jct");
         public Dictionary<string, string> Cookies
         {
             get
@@ -58,8 +61,6 @@ namespace BliveHelper.Utils.Blive
                 }
             }
         }
-        public string UserID => GetCookie("DedeUserID");
-        public string CSRF => GetCookie("bili_jct");
 
         public BliveAPI()
         {
@@ -175,9 +176,9 @@ namespace BliveHelper.Utils.Blive
         /// 获取直播间ID
         /// </summary>
         /// <returns></returns>
-        public async Task<BliveInfo> GetInfo()
+        public async Task<BliveInfoData> GetInfo()
         {
-            var response = await Get<BliveInfo>("https://api.live.bilibili.com/xlive/app-blink/v1/room/GetInfo?platform=android_link");
+            var response = await Get<BliveInfoData>("https://api.live.bilibili.com/xlive/app-blink/v1/room/GetInfo?platform=android_link");
             return response?.Data;
         }
 

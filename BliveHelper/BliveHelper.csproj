@@ -74,6 +74,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utils\Blive\BliveInfo.cs" />
     <Compile Include="Utils\Config.cs" />
     <Compile Include="Utils\Blive\BliveAPI.cs" />
     <Compile Include="Utils\Blive\BliveAPIModels.cs" />
@@ -147,7 +148,6 @@
     <Compile Include="Utils\Obs\ObsWebSocketAPI.cs" />
     <Compile Include="Utils\Obs\ObsWebSocketModels.cs" />
     <Compile Include="Utils\Structs\RelayCommand.cs" />
-    <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
     <Compile Include="Views\Components\TabItemModel.cs" />
     <Compile Include="Views\Pages\LiveSettingsPage.xaml.cs">
