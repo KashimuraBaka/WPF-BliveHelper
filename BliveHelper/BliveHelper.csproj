@@ -61,7 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
-    <Compile Include="Main.Error.cs" />
     <Compile Include="Main.Events.cs" />
     <Compile Include="Main.Static.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -150,6 +149,13 @@
     <Compile Include="Utils\Structs\RelayCommand.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
+    <Compile Include="Views\Components\TabItemModel.cs" />
+    <Compile Include="Views\Pages\LiveSettingsPage.xaml.cs">
+      <DependentUpon>LiveSettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\ObsSettingsPage.xaml.cs">
+      <DependentUpon>ObsSettingsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Windows\MainWindows.xaml.cs">
       <DependentUpon>MainWindows.xaml</DependentUpon>
     </Compile>
@@ -164,6 +170,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\Pages\LiveSettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\ObsSettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Windows\MainWindows.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
