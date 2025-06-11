@@ -139,10 +139,10 @@ namespace BliveHelper.Utils.Obs
                         var message = new ObsData<ObsRequestMessage<object>>() { OperationCode = ObsMessageTypes.Request, Data = requestData };
                         var messageStr = JsonConvert.SerializeObject(message);
                         var arraySegment = new ArraySegment<byte>(Encoding.UTF8.GetBytes(messageStr));
-                        await WebSocket.SendAsync(arraySegment, WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None);
                         // 发送后可以等待响应
                         var tcs = new TaskCompletionSource<object>();
-                        ResponseMethods.TryAdd(requestData.RequestId, new ObsMethodHandler(tcs, typeof(T)));
+                        var result = ResponseMethods.TryAdd(requestData.RequestId, new ObsMethodHandler(tcs, typeof(T)));
+                        await WebSocket.SendAsync(arraySegment, WebSocketMessageType.Text, endOfMessage: true, CancellationToken.None);
                         // 等待消息 
                         try
                         {
@@ -191,7 +191,7 @@ namespace BliveHelper.Utils.Obs
                             }
                             else
                             {
-                                ENV.Log($"位置消息: {message}");
+                                ENV.Log($"未知消息: {message}");
                             }
                             break;
                         case ObsMessageTypes.Event:
