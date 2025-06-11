@@ -43,8 +43,6 @@ namespace BliveHelper.Utils.Blive
             get => selectedGame;
             set => SetProperty(ref selectedGame, value);
         }
-        public ObservableCollection<string> LiveAreas { get; } = new ObservableCollection<string>();
-        public ObservableCollection<string> LiveGames { get; } = new ObservableCollection<string>();
         #endregion
 
         #region 隐私密钥

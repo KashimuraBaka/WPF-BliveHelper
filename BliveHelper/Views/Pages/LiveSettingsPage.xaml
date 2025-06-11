@@ -39,8 +39,8 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="直播间分区" />
-                <ComboBox Grid.Column="1" ItemsSource="{Binding Info.LiveAreas}" SelectedValue="{Binding Info.SelectedArea}" />
-                <ComboBox Grid.Column="2" Margin="5,0,0,0" ItemsSource="{Binding Info.LiveGames}" SelectedValue="{Binding Info.SelectedGame}" />
+                <ComboBox Grid.Column="1" ItemsSource="{Binding LiveAreas}" SelectedValue="{Binding Info.SelectedArea}" />
+                <ComboBox Grid.Column="2" Margin="5,0,0,0" ItemsSource="{Binding LiveGames}" SelectedValue="{Binding Info.SelectedGame}" />
             </Grid>
             <DockPanel>
                 <TextBlock Text="服务器地址" />

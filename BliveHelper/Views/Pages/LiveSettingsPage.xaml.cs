@@ -2,6 +2,7 @@
 using BliveHelper.Utils.Blive;
 using BliveHelper.Utils.Structs;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -16,14 +17,7 @@ namespace BliveHelper.Views.Pages
     /// </summary>
     public partial class LiveSettingsPage : UserControl, INotifyPropertyChanged
     {
-        private List<BliveArea> BaseLiveAreas { get; } = new List<BliveArea>();
-
         public BliveInfo Info => ENV.BliveInfo;
-        public string ActionButtonText => Info.IsStart ? "停止直播" : "开始直播";
-        public ICommand ChangedSettingCommand => new RelayCommand(ChangedSetting);
-        public ICommand ActionLiveCommand => new RelayCommand(ActionLive);
-        public int GameAreaID => BaseLiveAreas.FirstOrDefault(x => x.Name == Info.SelectedArea)?.List.FirstOrDefault(x => x.Name == Info.SelectedGame)?.Id ?? 0;
-
 
         private bool startEnable = true;
         public bool StartEnable
@@ -31,6 +25,14 @@ namespace BliveHelper.Views.Pages
             get => startEnable;
             set => SetProperty(ref startEnable, value);
         }
+
+        public string ActionButtonText => Info.IsStart ? "停止直播" : "开始直播";
+        public ICommand ChangedSettingCommand => new RelayCommand(ChangedSetting);
+        public ICommand ActionLiveCommand => new RelayCommand(ActionLive);
+        public int GameAreaID => BaseLiveAreas.FirstOrDefault(x => x.Name == Info.SelectedArea)?.List.FirstOrDefault(x => x.Name == Info.SelectedGame)?.Id ?? 0;
+        private List<BliveArea> BaseLiveAreas { get; } = new List<BliveArea>();
+        public ObservableCollection<string> LiveAreas { get; } = new ObservableCollection<string>();
+        public ObservableCollection<string> LiveGames { get; } = new ObservableCollection<string>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -47,10 +49,10 @@ namespace BliveHelper.Views.Pages
             // 添加直播分区
             BaseLiveAreas.Clear();
             BaseLiveAreas.AddRange(await ENV.BliveAPI.GetAreas());
-            Info.LiveAreas.Clear();
+            LiveAreas.Clear();
             foreach (var area in BaseLiveAreas)
             {
-                Info.LiveAreas.Add(area.Name);
+                LiveAreas.Add(area.Name);
             }
         }
 
@@ -65,13 +67,13 @@ namespace BliveHelper.Views.Pages
                     // 切换分区时, 刷新游戏列表
                     if (!string.IsNullOrEmpty(Info.SelectedArea))
                     {
-                        Info.LiveGames.Clear();
+                        LiveGames.Clear();
                         var area = BaseLiveAreas.FirstOrDefault(x => x.Name == Info.SelectedArea);
                         if (area != null)
                         {
                             foreach (var game in area.List)
                             {
-                                Info.LiveGames.Add(game.Name);
+                                LiveGames.Add(game.Name);
                             }
                         }
                     }

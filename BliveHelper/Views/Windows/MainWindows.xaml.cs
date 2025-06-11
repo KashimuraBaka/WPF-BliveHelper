@@ -26,6 +26,7 @@ namespace BliveHelper.Views.Windows
 
         // 标签页
         public ObservableCollection<TabItemModel> Pages { get; } = new ObservableCollection<TabItemModel>();
+        // 选择标签页
         private TabItemModel selectedPage;
         public TabItemModel SelectedPage
         {
