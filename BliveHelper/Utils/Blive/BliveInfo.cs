@@ -44,19 +44,19 @@ namespace BliveHelper.Utils.Blive
         #endregion
 
         #region 隐私密钥
-        private string streamServerUrl = string.Empty;
+        private string streamServerUrl;
         public string StreamServerUrl
         {
             get => streamServerUrl;
             set => SetProperty(ref streamServerUrl, value);
         }
-        private string streamServerKey = string.Empty;
+        private string streamServerKey;
         public string StreamServerKey
         {
             get => streamServerKey;
             set => SetProperty(ref streamServerKey, value);
         }
-        private string broadcastCode = string.Empty;
+        private string broadcastCode;
         public string BroadcastCode
         {
             get => broadcastCode;
@@ -86,18 +86,17 @@ namespace BliveHelper.Utils.Blive
                         RoomId = info.RoomId;
                         UserName = info.UserName;
                         // 获取推流码信息
-                        var streamInfo = await ENV.BliveAPI.GetLiveStremInfo(info.RoomId);
-                        if (streamInfo != null)
+                        if (StreamServerUrl is null || StreamServerKey is null)
                         {
-                            StreamServerUrl = streamInfo.Rtmp.ServerUrl;
-                            StreamServerKey = streamInfo.Rtmp.Code;
+                            var streamInfo = await ENV.BliveAPI.GetLiveStremInfo(info.RoomId);
+                            if (streamInfo != null)
+                            {
+                                StreamServerUrl = streamInfo.Rtmp.ServerUrl;
+                                StreamServerKey = streamInfo.Rtmp.Code;
+                            }
                         }
                         // 获取身份码信息
-                        var broadcastCode = await ENV.BliveAPI.GetOperationOnBroadcastCode();
-                        if (!string.IsNullOrEmpty(broadcastCode))
-                        {
-                            BroadcastCode = broadcastCode;
-                        }
+                        BroadcastCode = BroadcastCode ?? await ENV.BliveAPI.GetOperationOnBroadcastCode();
                     }
                     await Task.Delay(5000);
                 }
