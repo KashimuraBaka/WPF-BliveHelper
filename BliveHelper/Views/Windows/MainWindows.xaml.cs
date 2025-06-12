@@ -75,6 +75,7 @@ namespace BliveHelper.Views.Windows
         // 命令
         public ICommand SignOutCommand => new RelayCommand(SignOut);
         public ICommand SendDanmuCommand => new RelayCommand(SendDanmu);
+        public ICommand OpenLivePageCommand => new RelayCommand(OpenLivePage);
 
         public bool ShowSignOutButton => !ScanQR;
         public string WebSocketConnectText => WebSocket.IsOpen ? "已连接" : "已断开";
@@ -158,6 +159,8 @@ namespace BliveHelper.Views.Windows
                 Info.Title = string.Empty;
                 Info.SelectedArea = string.Empty;
                 Info.SelectedGame = string.Empty;
+                // 生成二维码
+                RefreshesQRCode();
             }
         }
 
@@ -169,6 +172,11 @@ namespace BliveHelper.Views.Windows
                 DanmuMessage = string.Empty;
             }
             DanmuEnable = true;
+        }
+
+        private void OpenLivePage()
+        {
+            Process.Start(new ProcessStartInfo { FileName = $"https://live.bilibili.com/{Info.RoomId}", UseShellExecute = true });
         }
 
         private async void RefreshesQRCode()
