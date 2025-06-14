@@ -76,6 +76,7 @@ namespace BliveHelper.Views.Windows
         public ICommand SignOutCommand => new RelayCommand(SignOut);
         public ICommand SendDanmuCommand => new RelayCommand(SendDanmu);
         public ICommand OpenLivePageCommand => new RelayCommand(OpenLivePage);
+        public ICommand CopyLiveRoomdIdCommand => new RelayCommand(CopyLiveRoomdId);
 
         public bool ShowSignOutButton => !ScanQR;
         public string WebSocketConnectText => WebSocket.IsOpen ? "已连接" : "已断开";
@@ -177,6 +178,11 @@ namespace BliveHelper.Views.Windows
         private void OpenLivePage()
         {
             Process.Start(new ProcessStartInfo { FileName = $"https://live.bilibili.com/{Info.RoomId}", UseShellExecute = true });
+        }
+
+        private void CopyLiveRoomdId()
+        {
+            Clipboard.SetDataObject(Info.RoomId.ToString());
         }
 
         private async void RefreshesQRCode()
