@@ -66,7 +66,7 @@
                     Content="退出登录"
                     Visibility="{Binding ShowSignOutButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </Grid>
-            <TabControl Grid.Row="1" ItemsSource="{Binding Pages, RelativeSource={RelativeSource AncestorType=Window}}" SelectedItem="{Binding SelectedPage, RelativeSource={RelativeSource AncestorType=Window}}">
+            <TabControl Grid.Row="1" Padding="0" ItemsSource="{Binding Pages, RelativeSource={RelativeSource AncestorType=Window}}" SelectedItem="{Binding SelectedPage, RelativeSource={RelativeSource AncestorType=Window}}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Header}" />
