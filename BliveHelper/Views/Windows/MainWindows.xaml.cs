@@ -82,7 +82,7 @@ namespace BliveHelper.Views.Windows
         public string WebSocketConnectText => WebSocket.IsOpen ? "已连接" : "已断开";
         public string WebSocketVersionText => WebSocket.IsOpen ? $"[OBS版本: {WebSocket.ObsStudioVerison}, 插件版本: {WebSocket.ObsPluginVersion}]" : string.Empty;
         public string WebSocketStateText => $"{WebSocketConnectText} {WebSocketVersionText}";
-        public string UserStateText => string.IsNullOrEmpty(Info.UserName) ? string.Empty : $"(已登录: {Info.UserName})";
+        public string UserStateText => string.IsNullOrEmpty(Info.UserName) ? string.Empty : $"(已登录: {Info.UserName}, UID: {Info.UserId})";
         public string RoomIdText => Info.IsStart ? $"{Info.RoomId} [正在直播]" : (Info.RoomId > 0 ? Info.RoomId.ToString() : "未登录");
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -99,6 +99,7 @@ namespace BliveHelper.Views.Windows
             Pages.Add(new TabItemModel("基本信息", new LiveSettingsPage()));
             Pages.Add(new TabItemModel("封面设置", new LiveCoverSettingsPage()));
             Pages.Add(new TabItemModel("用户封禁", new LiveBlockUsersPage()));
+            Pages.Add(new TabItemModel("房管设置", new LiveAdminsPage()));
             Pages.Add(new TabItemModel("OBS插件", new ObsSettingsPage()));
             SelectedPage = Pages.First();
         }
