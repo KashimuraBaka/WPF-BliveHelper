@@ -59,7 +59,7 @@ namespace BliveHelper.Views.Pages
         {
             if (int.TryParse(timeStr, out var time))
             {
-                var message = await ENV.BliveAPI.BlockUser(ENV.BliveInfo.RoomId, SelectedDanmaku.UserId.ToString(), time);
+                var message = await ENV.BliveAPI.AddBlockUser(ENV.BliveInfo.RoomId, SelectedDanmaku.UserId.ToString(), time);
                 if (!string.IsNullOrEmpty(message))
                 {
                     MessageBox.Show(message, "封禁用户失败", MessageBoxButton.OK, MessageBoxImage.Error);
