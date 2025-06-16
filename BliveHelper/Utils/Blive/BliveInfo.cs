@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using BliveHelper.Utils.Structs;
+using System.Threading.Tasks;
 
 namespace BliveHelper.Utils.Blive
 {

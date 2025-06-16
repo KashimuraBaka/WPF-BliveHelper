@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BliveHelper.Utils.Structs;
+using Newtonsoft.Json;
 
 namespace BliveHelper.Utils
 {

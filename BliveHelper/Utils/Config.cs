@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BliveHelper.Utils.Structs;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
