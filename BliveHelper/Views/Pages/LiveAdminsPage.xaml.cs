@@ -43,11 +43,10 @@ namespace BliveHelper.Views.Pages
         public ICommand AddAdminCommand => new RelayCommand(AddAdmin);
         public ICommand RemoveAdminCommand => new RelayCommand(RemoveAdmin);
 
-        public LiveAdminsPage()
+        public LiveAdminsPage() : base()
         {
             InitializeComponent();
-            DataContext = this;
-            Loaded += LiveAdminsPage_Loaded; ;
+            Loaded += LiveAdminsPage_Loaded;
         }
 
         private async void LiveAdminsPage_Loaded(object sender, RoutedEventArgs e)

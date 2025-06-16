@@ -31,10 +31,9 @@ namespace BliveHelper.Views.Pages
 
         public ICommand SaveWebsocketSettingCommand => new RelayCommand(SaveWebsocketSetting);
 
-        public ObsSettingsPage()
+        public ObsSettingsPage() : base()
         {
             InitializeComponent();
-            DataContext = this;
             Loaded += ObsSettingsPage_Loaded;
         }
 

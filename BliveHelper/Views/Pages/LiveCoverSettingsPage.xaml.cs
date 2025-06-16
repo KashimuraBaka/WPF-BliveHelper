@@ -26,10 +26,9 @@ namespace BliveHelper.Views.Pages
             }
         }
 
-        public LiveCoverSettingsPage()
+        public LiveCoverSettingsPage() : base()
         {
             InitializeComponent();
-            DataContext = this;
             Loaded += LiveCoverSettingsPage_Loaded;
         }
 

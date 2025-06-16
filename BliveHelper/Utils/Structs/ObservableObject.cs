@@ -28,6 +28,11 @@ namespace BliveHelper.Utils.Structs
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public ObservableUserControl()
+        {
+            DataContext = this;
+        }
+
         protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

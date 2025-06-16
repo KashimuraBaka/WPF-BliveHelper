@@ -32,10 +32,9 @@ namespace BliveHelper.Views.Pages
         public ObservableCollection<string> LiveAreas { get; } = new ObservableCollection<string>();
         public ObservableCollection<string> LiveGames { get; } = new ObservableCollection<string>();
 
-        public LiveSettingsPage()
+        public LiveSettingsPage() : base()
         {
             InitializeComponent();
-            DataContext = this;
             Info.PropertyChanged += Info_PropertyChanged;
             ReadLiveAreas();
         }

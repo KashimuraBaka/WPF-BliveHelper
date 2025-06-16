@@ -32,10 +32,9 @@ namespace BliveHelper.Views.Pages
         public ICommand BlockUserCommand => new RelayCommand<string>(BlockUser);
         public ICommand RemoveBlockUserCommand => new RelayCommand(RemoveBlockUser);
 
-        public LiveBlockUsersPage()
+        public LiveBlockUsersPage() : base()
         {
             InitializeComponent();
-            DataContext = this;
             Loaded += LiveBlockUsersPage_Loaded;
         }
 
