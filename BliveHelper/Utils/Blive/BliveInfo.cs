@@ -48,6 +48,12 @@ namespace BliveHelper.Utils.Blive
             get => selectedGame;
             set => SetProperty(ref selectedGame, value);
         }
+        private string news;
+        public string News
+        {
+            get => news;
+            set => SetProperty(ref news, value);
+        }
         #endregion
 
         #region 隐私密钥
@@ -93,6 +99,7 @@ namespace BliveHelper.Utils.Blive
                         Title = Title ?? info.Title;
                         IsStart = info.LiveStatus is BliveState.Live;
                         RoomId = info.RoomId;
+                        News = News ?? info.AnchorContent;
                         // 获取推流码信息
                         if (StreamServerUrl is null || StreamServerKey is null)
                         {

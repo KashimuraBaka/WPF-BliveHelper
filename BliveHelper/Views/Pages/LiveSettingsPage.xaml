@@ -21,25 +21,25 @@
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="Margin" Value="0,0,10,0" />
                 <Setter Property="Width" Value="100" />
+                <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
         </Grid.Resources>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <DockPanel Grid.Row="0">
-            <TextBlock Text="直播间标题" />
-            <TextBox Text="{Binding Info.Title}" />
-        </DockPanel>
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="0">
+            <DockPanel>
+                <TextBlock Text="直播间标题" />
+                <TextBox Text="{Binding Info.Title}" />
+            </DockPanel>
             <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="直播间分区" />
+                <TextBlock Grid.Column="0" Text="直播间分区" />
                 <ComboBox Grid.Column="1" ItemsSource="{Binding LiveAreas}" SelectedValue="{Binding Info.SelectedArea}" />
                 <ComboBox Grid.Column="2" Margin="5,0,0,0" ItemsSource="{Binding LiveGames}" SelectedValue="{Binding Info.SelectedGame}" />
             </Grid>
@@ -54,6 +54,10 @@
             <DockPanel>
                 <TextBlock Text="身份码" />
                 <components:PasswordBox IsReadOnly="True" Password="{Binding Info.BroadcastCode}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock VerticalAlignment="top" Text="直播公告" />
+                <TextBox Height="100" AcceptsReturn="True" Text="{Binding Info.News}" TextWrapping="Wrap" />
             </DockPanel>
         </StackPanel>
         <!--  按钮  -->

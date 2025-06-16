@@ -84,14 +84,15 @@ namespace BliveHelper.Views.Pages
         {
             if (!string.IsNullOrEmpty(Info.SelectedArea) && !string.IsNullOrEmpty(Info.SelectedGame))
             {
-                var result = await ENV.BliveAPI.SetLiveInfo(Info.RoomId, Info.Title, GameAreaID);
-                if (result.Success)
+                var info_result = await ENV.BliveAPI.SetLiveInfo(Info.RoomId, Info.Title, GameAreaID);
+                var news_result = await ENV.BliveAPI.UpdateLiveNews(Info.RoomId, Info.UserId, Info.News);
+                if (info_result.Success && news_result)
                 {
                     MessageBox.Show("修改完毕!");
                 }
                 else
                 {
-                    MessageBox.Show(result.Message);
+                    MessageBox.Show(info_result.Message);
                 }
             }
             else
@@ -107,13 +108,14 @@ namespace BliveHelper.Views.Pages
             {
                 if (!string.IsNullOrEmpty(Info.SelectedArea) && !string.IsNullOrEmpty(Info.SelectedGame))
                 {
-                    var rtmp = await ENV.BliveAPI.StartLive(Info.RoomId, Info.Title, GameAreaID);
-                    if (rtmp != null && !string.IsNullOrEmpty(rtmp.ServerUrl))
+                    var news_result = await ENV.BliveAPI.UpdateLiveNews(Info.RoomId, Info.UserId, Info.News);
+                    var rtmp_result = await ENV.BliveAPI.StartLive(Info.RoomId, Info.Title, GameAreaID);
+                    if (news_result && rtmp_result != null && !string.IsNullOrEmpty(rtmp_result.ServerUrl))
                     {
                         Info.IsStart = true;
-                        Info.StreamServerUrl = rtmp.ServerUrl;
-                        Info.StreamServerKey = rtmp.Code;
-                        await ENV.WebSocket.SetStreamServiceSettings(rtmp.ServerUrl, rtmp.Code);
+                        Info.StreamServerUrl = rtmp_result.ServerUrl;
+                        Info.StreamServerKey = rtmp_result.Code;
+                        await ENV.WebSocket.SetStreamServiceSettings(rtmp_result.ServerUrl, rtmp_result.Code);
                         await ENV.WebSocket.StartStream();
                     }
                     else

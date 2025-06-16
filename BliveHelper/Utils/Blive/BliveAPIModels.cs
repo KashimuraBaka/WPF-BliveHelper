@@ -112,6 +112,8 @@ namespace BliveHelper.Utils.Blive
         public int AreaV2Id { get; set; }
         [JsonProperty("master_level")]
         public int MasterLevel { get; set; }
+        [JsonProperty("anchor_content")]
+        public string AnchorContent { get; set; } = string.Empty;
     }
 
     public class BliveArea
@@ -464,5 +466,15 @@ namespace BliveHelper.Utils.Blive
             UserId = userId;
             UserName = userName;
         }
+    }
+
+    public class BliveUpdateNewsRequest : BliveCsrf
+    {
+        [JsonProperty("room_id")]
+        public long RoomId { get; set; }
+        [JsonProperty("uid")]
+        public long UserId { get; set; }
+        [JsonProperty("content")]
+        public string Content { get; set; }
     }
 }
