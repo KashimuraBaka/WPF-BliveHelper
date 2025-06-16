@@ -17,6 +17,8 @@ namespace BliveHelper.Utils.Blive
 {
     public class BliveAPI : IDisposable
     {
+        private const string BLIVE_API_URL = "https://api.live.bilibili.com";
+
         private HttpClient Client { get; }
         private CookieContainer CookieContainer { get; } = new CookieContainer();
         public bool IsLogin => CookieContainer.Count > 0;
@@ -159,7 +161,7 @@ namespace BliveHelper.Utils.Blive
         /// <returns></returns>
         public async Task<string> GetRoomID(string userid)
         {
-            var response = await Get<BliveRoomIDResponse>($"https://api.live.bilibili.com/room/v2/Room/room_id_by_uid?uid={userid}");
+            var response = await Get<BliveRoomIDResponse>($"{BLIVE_API_URL}/room/v2/Room/room_id_by_uid?uid={userid}");
             return response?.Data?.RoomId.ToString() ?? string.Empty;
         }
 
@@ -169,7 +171,7 @@ namespace BliveHelper.Utils.Blive
         /// <returns></returns>
         public async Task<BliveArea[]> GetAreas()
         {
-            var response = await Get<BliveArea[]>("https://api.live.bilibili.com/room/v1/Area/getList?show_pinyin=1");
+            var response = await Get<BliveArea[]>($"{BLIVE_API_URL}/room/v1/Area/getList?show_pinyin=1");
             return response?.Data ?? Array.Empty<BliveArea>();
         }
 
@@ -179,7 +181,7 @@ namespace BliveHelper.Utils.Blive
         /// <returns></returns>
         public async Task<BliveInfoData> GetInfo()
         {
-            var response = await Get<BliveInfoData>("https://api.live.bilibili.com/xlive/app-blink/v1/room/GetInfo?platform=android_link");
+            var response = await Get<BliveInfoData>($"{BLIVE_API_URL}/xlive/app-blink/v1/room/GetInfo?platform=android_link");
             return response?.Data;
         }
 
@@ -190,7 +192,7 @@ namespace BliveHelper.Utils.Blive
         /// <returns></returns>
         public async Task<BliveStreamResponse> GetLiveStremInfo(int roomId)
         {
-            var response = await Get<BliveStreamResponse>($"https://api.live.bilibili.com/live_stream/v1/StreamList/get_stream_by_roomId?room_id={roomId}");
+            var response = await Get<BliveStreamResponse>($"{BLIVE_API_URL}/live_stream/v1/StreamList/get_stream_by_roomId?room_id={roomId}");
             return response?.Data;
         }
 
@@ -210,7 +212,7 @@ namespace BliveHelper.Utils.Blive
                 Csrf = CSRF,
                 CsrfToken = CSRF,
             };
-            var response = await PostFormUrlEncoded<BliveTitleResponse>("https://api.live.bilibili.com/room/v1/Room/update", requestData);
+            var response = await PostFormUrlEncoded<BliveTitleResponse>($"{BLIVE_API_URL}/room/v1/Room/update", requestData);
             return new SetLiveInfoResult(response?.Code == 0, response?.Message ?? string.Empty, response?.Data);
         }
 
@@ -220,7 +222,7 @@ namespace BliveHelper.Utils.Blive
         /// <returns></returns>
         public async Task<BliveCoverInfo[]> GetLiveCovers()
         {
-            var response = await Get<BliveCoverInfo[]>("https://api.live.bilibili.com/room/v1/Cover/get_list");
+            var response = await Get<BliveCoverInfo[]>($"{BLIVE_API_URL}/room/v1/Cover/get_list");
             return response?.Data ?? Array.Empty<BliveCoverInfo>();
         }
 
@@ -234,7 +236,7 @@ namespace BliveHelper.Utils.Blive
                 Csrf = CSRF,
                 CsrfToken = CSRF
             };
-            var response = await PostFormUrlEncoded<JObject[]>("https://api.live.bilibili.com/room/v1/Cover/replace", requestData);
+            var response = await PostFormUrlEncoded<JObject[]>($"{BLIVE_API_URL}/room/v1/Cover/replace", requestData);
             return response?.Message ?? string.Empty;
         }
 
@@ -257,7 +259,7 @@ namespace BliveHelper.Utils.Blive
                 Csrf = CSRF,
                 CsrfToken = CSRF
             };
-            var response = await PostFormUrlEncoded<BliveStartResponse>("https://api.live.bilibili.com/room/v1/Room/startLive", requestData);
+            var response = await PostFormUrlEncoded<BliveStartResponse>($"{BLIVE_API_URL}/room/v1/Room/startLive", requestData);
             return response?.Data?.Rtmp;
         }
 
@@ -275,7 +277,7 @@ namespace BliveHelper.Utils.Blive
                 Csrf = CSRF,
                 CsrfToken = CSRF
             };
-            var response = await PostFormUrlEncoded<BliveStopResponse>("https://api.live.bilibili.com/room/v1/Room/stopLive", requestData);
+            var response = await PostFormUrlEncoded<BliveStopResponse>($"{BLIVE_API_URL}/room/v1/Room/stopLive", requestData);
             return response?.Data;
         }
 
@@ -291,7 +293,7 @@ namespace BliveHelper.Utils.Blive
                 CsrfToken = CSRF
             };
             var response = await PostFormUrlEncoded<BliveOperationOnBroadcastCodeResponse>(
-                "https://api.live.bilibili.com/xlive/open-platform/v1/common/operationOnBroadcastCode",
+                $"{BLIVE_API_URL}/xlive/open-platform/v1/common/operationOnBroadcastCode",
                 requestData
             );
             return response?.Data?.Code ?? string.Empty;
@@ -312,11 +314,11 @@ namespace BliveHelper.Utils.Blive
                 CsrfToken = CSRF,
                 Msg = message
             };
-            var response = await PostFormUrlEncoded<JObject>("https://api.live.bilibili.com/msg/send", requestData);
+            var response = await PostFormUrlEncoded<JObject>($"{BLIVE_API_URL}/msg/send", requestData);
             return response != null && response.Code == 0;
         }
 
-        public async Task<string> BlockUser(int roomId, string userContent, int hour)
+        public async Task<string> AddBlockUser(int roomId, string userContent, int hour)
         {
             var requestData = new BliveBlockUserRequest()
             {
@@ -327,7 +329,7 @@ namespace BliveHelper.Utils.Blive
                 Csrf = CSRF,
                 CsrfToken = CSRF
             };
-            var response = await PostFormUrlEncoded<object>("https://api.live.bilibili.com/liveact/room_block_user", requestData);
+            var response = await PostFormUrlEncoded<object>($"{BLIVE_API_URL}/liveact/room_block_user", requestData);
             return response?.Message ?? string.Empty;
         }
 
@@ -340,7 +342,7 @@ namespace BliveHelper.Utils.Blive
                 Csrf = CSRF,
                 CsrfToken = CSRF
             };
-            var response = await PostFormUrlEncoded<object>("https://api.live.bilibili.com/banned_service/v1/Silent/del_room_block_user", requestData);
+            var response = await PostFormUrlEncoded<object>($"{BLIVE_API_URL}/banned_service/v1/Silent/del_room_block_user", requestData);
             return response?.Message ?? string.Empty;
         }
 
@@ -352,7 +354,7 @@ namespace BliveHelper.Utils.Blive
             {
                 while (true)
                 {
-                    var response = await Get<BliveBlockUserInfo[]>($"https://api.live.bilibili.com/liveact/ajaxGetBlockList?roomid={roomId}&page={currentPage}");
+                    var response = await Get<BliveBlockUserInfo[]>($"{BLIVE_API_URL}/liveact/ajaxGetBlockList?roomid={roomId}&page={currentPage}");
                     if (response?.Data == null || response.Data.Count() == 0)
                     {
                         break;
@@ -362,6 +364,53 @@ namespace BliveHelper.Utils.Blive
                 }
             }
             return blockUsers;
+        }
+
+        public async Task<BliveAdminResult> GetLiveAdmins(int roomId)
+        {
+            var currentPage = 1;
+            var data = new BliveAdminResult() { Admins = new List<BliveAdminInfo>() };
+            if (roomId > 0)
+            {
+                BliveResponse<BliveAdminPage> res;
+                do
+                {
+                    res = await Get<BliveAdminPage>($"{BLIVE_API_URL}/xlive/web-room/v1/roomAdmin/get_by_room?roomid={roomId}&page_size=100&page={currentPage}");
+                    if (res?.Data == null || res.Data.AdminList.Count() == 0)
+                    {
+                        break;
+                    }
+                    // 添加数据
+                    data.MaxRoomAnchorsNumber = res.Data.MaxRoomAnchorsNumber;
+                    data.Admins.AddRange(res.Data.AdminList);
+                }
+                while (++currentPage <= res.Data.Page.TotalPage);
+            }
+            return data;
+        }
+
+        public async Task<BliveAddAdminResult> AddLiveAdmin(string adminContent)
+        {
+            var requestData = new BliveAddAdminRequest()
+            {
+                Admin = adminContent,
+                Csrf = CSRF,
+                CsrfToken = CSRF
+            };
+            var response = await PostFormUrlEncoded<BliveAddAdminResponse>($"{BLIVE_API_URL}/xlive/web-ucenter/v1/roomAdmin/appoint", requestData);
+            return new BliveAddAdminResult(response?.Code == 0, response?.Data.UserInfo.UserId ?? 0, response?.Data.UserInfo.UserName);
+        }
+
+        public async Task<bool> RemoveLiveAdmin(long userId)
+        {
+            var requestData = new BliveRemoveAdminRequest()
+            {
+                UserId = userId,
+                Csrf = CSRF,
+                CsrfToken = CSRF
+            };
+            var response = await PostFormUrlEncoded<object>($"{BLIVE_API_URL}/xlive/app-ucenter/v1/roomAdmin/dismiss", requestData);
+            return response != null && response.Code == 0;
         }
 
         public async Task<BiliUIDInfo[]> NameToUID(IEnumerable<string> names)

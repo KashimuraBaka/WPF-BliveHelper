@@ -44,6 +44,14 @@ namespace BliveHelper.Utils.Blive
         public string CsrfToken { get; set; } = string.Empty;
     }
 
+    public class BliveUserInfo
+    {
+        [JsonProperty("uid")]
+        public long UserId { get; set; }
+        [JsonProperty("uname")]
+        public string UserName { get; set; } = string.Empty;
+    }
+
     public class BliveResponse<T>
     {
         [JsonProperty("code")]
@@ -84,14 +92,10 @@ namespace BliveHelper.Utils.Blive
         public long RoomId { get; set; }
     }
 
-    public class BliveInfoData
+    public class BliveInfoData : BliveUserInfo
     {
         [JsonProperty("room_id")]
         public int RoomId { get; set; }
-        [JsonProperty("uid")]
-        public int Uid { get; set; }
-        [JsonProperty("uname")]
-        public string UserName { get; set; } = string.Empty;
         [JsonProperty("title")]
         public string Title { get; set; } = string.Empty;
         [JsonProperty("face")]
@@ -358,7 +362,7 @@ namespace BliveHelper.Utils.Blive
         public long BlockId { get; set; }
     }
 
-    public class BliveBlockUserInfo
+    public class BliveBlockUserInfo : BliveUserInfo
     {
         [JsonProperty("id")]
         public long BlockId { get; set; }
@@ -366,10 +370,6 @@ namespace BliveHelper.Utils.Blive
         public bool IsAnchor { get; set; }
         [JsonProperty("roomid")]
         public int RoomId { get; set; }
-        [JsonProperty("uid")]
-        public long UserId { get; set; }
-        [JsonProperty("uname")]
-        public string UserName { get; set; }
         [JsonProperty("type")]
         public int Type { get; set; } // 1:封禁, 2:屏蔽
         [JsonProperty("adminid")]
@@ -386,5 +386,83 @@ namespace BliveHelper.Utils.Blive
         public string BlockEndTime { get; set; }
         [JsonProperty("msg_time")]
         public string MessageTime { get; set; } = string.Empty;
+    }
+
+    public class BliveAdminPageInfo
+    {
+        [JsonProperty("page")]
+        public int Page { get; set; }
+        [JsonProperty("page_size")]
+        public int PageSize { get; set; }
+        [JsonProperty("total_page")]
+        public int TotalPage { get; set; }
+        [JsonProperty("total_count")]
+        public int TotalCount { get; set; }
+    }
+
+    public class BliveAdminInfo : BliveUserInfo
+    {
+        [JsonProperty("face")]
+        public string FaceImageUrl { get; set; }
+        [JsonProperty("ctime")]
+        public string CreationTime { get; set; }
+    }
+
+    public class BliveAdminPage
+    {
+        [JsonProperty("page")]
+        public BliveAdminPageInfo Page { get; set; } = new BliveAdminPageInfo();
+        [JsonProperty("data")]
+        public BliveAdminInfo[] AdminList { get; set; }
+        [JsonProperty("max_room_anchors_number")]
+        public int MaxRoomAnchorsNumber { get; set; }
+    }
+
+    public struct BliveAdminResult
+    {
+        public int MaxRoomAnchorsNumber { get; set; }
+        public List<BliveAdminInfo> Admins { get; set; }
+    }
+
+    public class BliveAddAdminRequest : BliveCsrf
+    {
+        [JsonProperty("admin")]
+        public string Admin { get; set; }
+        [JsonProperty("admin_level")]
+        public int AdminLevel { get; set; } = 1;
+    }
+
+    public class BliveRemoveAdminRequest : BliveCsrf
+    {
+        [JsonProperty("uid")]
+        public long UserId { get; set; }
+    }
+
+    public class BliveAddAdminResponse
+    {
+        [JsonProperty("userinfo")]
+        public BliveUserInfo UserInfo { get; set; } = new BliveUserInfo();
+        [JsonProperty("uid")]
+        public long UserId { get; set; }
+        [JsonProperty("roomid")]
+        public long RoomId { get; set; }
+        [JsonProperty("ctime")]
+        public string CreationTime { get; set; }
+        [JsonProperty("admin_level")]
+        public int AdminLevel { get; set; }
+    }
+
+    public struct BliveAddAdminResult
+    {
+        public bool Success { get; set; }
+        public long UserId { get; set; }
+        public string UserName { get; set; }
+
+        public BliveAddAdminResult(bool success, long userId, string userName)
+        {
+            Success = success;
+            UserId = userId;
+            UserName = userName;
+        }
     }
 }

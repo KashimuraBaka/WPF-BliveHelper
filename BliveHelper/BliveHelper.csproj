@@ -152,6 +152,9 @@
     <Compile Include="Utils\Structs\UnixTimestampConverter.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
     <Compile Include="Views\Components\TabItemModel.cs" />
+    <Compile Include="Views\Pages\LiveAdminsPage.xaml.cs">
+      <DependentUpon>LiveAdminsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\LiveBlockUsersPage.xaml.cs">
       <DependentUpon>LiveBlockUsersPage.xaml</DependentUpon>
     </Compile>
@@ -178,6 +181,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Views\Pages\LiveAdminsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\LiveBlockUsersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
