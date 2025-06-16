@@ -12,6 +12,12 @@ namespace BliveHelper.Utils.Blive
             get => isStart;
             set => SetProperty(ref isStart, value);
         }
+        private long userId;
+        public long UserId
+        {
+            get => userId;
+            set => SetProperty(ref userId, value);
+        }
         private string userName = string.Empty;
         public string UserName
         {
@@ -80,12 +86,13 @@ namespace BliveHelper.Utils.Blive
                     var info = await ENV.BliveAPI.GetInfo();
                     if (info != null)
                     {
+                        UserId = info.UserId;
+                        UserName = info.UserName;
                         SelectedArea = SelectedArea ?? info.ParentName;
                         SelectedGame = SelectedGame ?? info.AreaV2Name;
                         Title = Title ?? info.Title;
                         IsStart = info.LiveStatus is BliveState.Live;
                         RoomId = info.RoomId;
-                        UserName = info.UserName;
                         // 获取推流码信息
                         if (StreamServerUrl is null || StreamServerKey is null)
                         {
