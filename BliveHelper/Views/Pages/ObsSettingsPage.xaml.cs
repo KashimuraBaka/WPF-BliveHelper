@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace BliveHelper.Views.Pages
@@ -12,7 +11,7 @@ namespace BliveHelper.Views.Pages
     /// <summary>
     /// ObsSettingsPage.xaml 的交互逻辑
     /// </summary>
-    public partial class ObsSettingsPage : UserControl, INotifyPropertyChanged
+    public partial class ObsSettingsPage : ObservableUserControl
     {
         private string serverUrl;
         public string ServerUrl
@@ -32,8 +31,6 @@ namespace BliveHelper.Views.Pages
             get => saveEnable;
             set => SetProperty(ref saveEnable, value);
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public ICommand SaveWebsocketSettingCommand => new RelayCommand(SaveWebsocketSetting);
 
@@ -64,19 +61,6 @@ namespace BliveHelper.Views.Pages
                 await ENV.Config.SaveAsync();
             }
             SaveEnable = true;
-        }
-
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
-            NotifyPropertyChanged(propertyName);
-            return true;
         }
     }
 }

@@ -1,20 +1,17 @@
 ﻿using BliveHelper.Utils;
 using BliveHelper.Utils.Blive;
+using BliveHelper.Utils.Structs;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace BliveHelper.Views.Pages
 {
     /// <summary>
     /// LiveCoverSettingsPage.xaml 的交互逻辑
     /// </summary>
-    public partial class LiveCoverSettingsPage : UserControl, INotifyPropertyChanged
+    public partial class LiveCoverSettingsPage : ObservableUserControl
     {
         public ObservableCollection<BliveCoverInfo> Covers { get; } = new ObservableCollection<BliveCoverInfo>();
         // 选择背景
@@ -35,8 +32,6 @@ namespace BliveHelper.Views.Pages
             DataContext = this;
             Loaded += LiveCoverSettingsPage_Loaded;
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private async void LiveCoverSettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -62,21 +57,5 @@ namespace BliveHelper.Views.Pages
                 NotifyPropertyChanged(nameof(SelectedCover));
             }));
         }
-
-        #region MVVM Helpers
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (!EqualityComparer<T>.Default.Equals(field, value))
-            {
-                field = value;
-                NotifyPropertyChanged(propertyName);
-            }
-        }
-        #endregion
     }
 }

@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace BliveHelper.Views.Pages
@@ -15,7 +14,7 @@ namespace BliveHelper.Views.Pages
     /// <summary>
     /// LiveSettingsPage.xaml 的交互逻辑
     /// </summary>
-    public partial class LiveSettingsPage : UserControl, INotifyPropertyChanged
+    public partial class LiveSettingsPage : ObservableUserControl
     {
         public BliveInfo Info => ENV.BliveInfo;
 
@@ -33,8 +32,6 @@ namespace BliveHelper.Views.Pages
         private List<BliveArea> BaseLiveAreas { get; } = new List<BliveArea>();
         public ObservableCollection<string> LiveAreas { get; } = new ObservableCollection<string>();
         public ObservableCollection<string> LiveGames { get; } = new ObservableCollection<string>();
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public LiveSettingsPage()
         {
@@ -140,20 +137,6 @@ namespace BliveHelper.Views.Pages
                 }
             }
             StartEnable = true;
-        }
-
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (!EqualityComparer<T>.Default.Equals(field, value))
-            {
-                field = value;
-                NotifyPropertyChanged(propertyName);
-            }
         }
     }
 }

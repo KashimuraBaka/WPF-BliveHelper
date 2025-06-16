@@ -1,12 +1,8 @@
 ﻿using BliveHelper.Utils;
 using BliveHelper.Utils.Blive;
 using BliveHelper.Utils.Structs;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace BliveHelper.Views.Pages
@@ -14,7 +10,7 @@ namespace BliveHelper.Views.Pages
     /// <summary>
     /// LiveBlockUsersPage.xaml 的交互逻辑
     /// </summary>
-    public partial class LiveBlockUsersPage : UserControl, INotifyPropertyChanged
+    public partial class LiveBlockUsersPage : ObservableUserControl
     {
         private Danmaku selectedDanmaku;
         public Danmaku SelectedDanmaku
@@ -35,8 +31,6 @@ namespace BliveHelper.Views.Pages
         public ICommand CopyUIDCommand => new RelayCommand(SaveUID);
         public ICommand BlockUserCommand => new RelayCommand<string>(BlockUser);
         public ICommand RemoveBlockUserCommand => new RelayCommand(RemoveBlockUser);
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public LiveBlockUsersPage()
         {
@@ -90,21 +84,5 @@ namespace BliveHelper.Views.Pages
                 BlockUsers.Remove(SelectedBlockUser);
             }
         }
-
-        #region MVVM Helpers
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (!EqualityComparer<T>.Default.Equals(field, value))
-            {
-                field = value;
-                NotifyPropertyChanged(propertyName);
-            }
-        }
-        #endregion
     }
 }
