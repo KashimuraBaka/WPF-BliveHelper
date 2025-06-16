@@ -1,8 +1,5 @@
 ﻿using BliveHelper.Utils;
 using BliveHelper.Utils.Structs;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
