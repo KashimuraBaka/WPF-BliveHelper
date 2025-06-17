@@ -79,6 +79,7 @@
     <Compile Include="Utils\Blive\BliveAPI.cs" />
     <Compile Include="Utils\Blive\BliveAPIModels.cs" />
     <Compile Include="Utils\Config.WebSocket.cs" />
+    <Compile Include="Utils\Converter\ValueToBooleanConverter.cs" />
     <Compile Include="Utils\ENV.cs" />
     <Compile Include="Utils\QRCoder\AbstractQRCode.cs" />
     <Compile Include="Utils\QRCoder\ASCIIQRCode.cs" />
@@ -150,10 +151,14 @@
     <Compile Include="Utils\Obs\ObsWebSocketModels.cs" />
     <Compile Include="Utils\Structs\RelayCommand.cs" />
     <Compile Include="Utils\Structs\UnixTimestampConverter.cs" />
+    <Compile Include="Views\Components\ImageListBox.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
     <Compile Include="Views\Components\TabItemModel.cs" />
     <Compile Include="Views\Pages\LiveAdminsPage.xaml.cs">
       <DependentUpon>LiveAdminsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\LiveBackgroundsPage.xaml.cs">
+      <DependentUpon>LiveBackgroundsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\LiveBlockUsersPage.xaml.cs">
       <DependentUpon>LiveBlockUsersPage.xaml</DependentUpon>
@@ -181,7 +186,19 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Resources\Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\ImageListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Pages\LiveAdminsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Pages\LiveBackgroundsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
