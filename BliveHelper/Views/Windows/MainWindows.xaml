@@ -1,23 +1,26 @@
-﻿<Window
+﻿<structs:ObservableWindow
     x:Class="BliveHelper.Views.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:BliveHelper.Views.Components"
+    xmlns:converter="clr-namespace:BliveHelper.Utils.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BliveHelper.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:utils="clr-namespace:BliveHelper.Utils"
+    xmlns:structs="clr-namespace:BliveHelper.Utils.Structs"
     Title="{Binding UserStateText, StringFormat=直播间助手 {0}}"
     Width="750"
     Height="500"
     d:DataContext="{d:DesignInstance Type=local:MainWindow}"
     ResizeMode="NoResize"
     mc:Ignorable="d">
-    <Window.Resources>
+    <structs:ObservableWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-    </Window.Resources>
+        <converter:ValueToBooleanConverter x:Key="ValueToBooleanConverter" />
+    </structs:ObservableWindow.Resources>
     <Grid>
-        <Grid Margin="8,8,8,6">
+        <!--  主要显示内容  -->
+        <Grid Margin="8,8,8,6" IsEnabled="{Binding Info.UserName, Converter={StaticResource ValueToBooleanConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -118,4 +121,4 @@
             </Grid>
         </Border>
     </Grid>
-</Window>
+</structs:ObservableWindow>

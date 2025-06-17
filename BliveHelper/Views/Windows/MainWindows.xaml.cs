@@ -9,7 +9,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -20,21 +19,11 @@ namespace BliveHelper.Views.Windows
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : ObservableWindow
     {
         private ObsWebSocketAPI WebSocket => ENV.WebSocket;
-
-        // 标签页
-        public ObservableCollection<TabItemModel> Pages { get; } = new ObservableCollection<TabItemModel>();
-        // 选择标签页
-        private TabItemModel selectedPage;
-        public TabItemModel SelectedPage
-        {
-            get => selectedPage;
-            set => SetProperty(ref selectedPage, value);
-        }
-        // 直播信息
         public BliveInfo Info => ENV.BliveInfo;
+
         // 扫码
         private bool scanQR;
         public bool ScanQR
@@ -71,6 +60,15 @@ namespace BliveHelper.Views.Windows
             get => danmuEnable;
             set => SetProperty(ref danmuEnable, value);
         }
+        // 选择标签页
+        private TabItemModel selectedPage;
+        public TabItemModel SelectedPage
+        {
+            get => selectedPage;
+            set => SetProperty(ref selectedPage, value);
+        }
+
+        public ObservableCollection<TabItemModel> Pages { get; } = new ObservableCollection<TabItemModel>();
 
         // 命令
         public ICommand SignOutCommand => new RelayCommand(SignOut);
@@ -85,12 +83,9 @@ namespace BliveHelper.Views.Windows
         public string UserStateText => string.IsNullOrEmpty(Info.UserName) ? string.Empty : $"(已登录: {Info.UserName}, UID: {Info.UserId})";
         public string RoomIdText => Info.IsStart ? $"{Info.RoomId} [正在直播]" : (Info.RoomId > 0 ? Info.RoomId.ToString() : "未登录");
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public MainWindow()
+        public MainWindow() : base()
         {
             InitializeComponent();
-            DataContext = this;
             // 绑定事件
             Loaded += MainWindow_Loaded;
             ENV.BliveInfo.PropertyChanged += BliveInfo_PropertyChanged;
@@ -98,6 +93,7 @@ namespace BliveHelper.Views.Windows
             // 添加标签页
             Pages.Add(new TabItemModel("基本信息", new LiveSettingsPage()));
             Pages.Add(new TabItemModel("封面设置", new LiveCoverSettingsPage()));
+            Pages.Add(new TabItemModel("背景设置", new LiveBackgroundsPage()));
             Pages.Add(new TabItemModel("用户封禁", new LiveBlockUsersPage()));
             Pages.Add(new TabItemModel("房管设置", new LiveAdminsPage()));
             Pages.Add(new TabItemModel("OBS插件", new ObsSettingsPage()));
@@ -226,31 +222,5 @@ namespace BliveHelper.Views.Windows
                 }
             }
         }
-
-        #region MVVM 辅助方法
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (!EqualityComparer<T>.Default.Equals(field, value))
-            {
-                field = value;
-                NotifyPropertyChanged(propertyName);
-            }
-        }
-        #endregion
-
-        #region 弹幕姬插件, 必备
-        /// <param name="message"></param>
-#pragma warning disable IDE1006 // 命名样式
-        public void logging(string message)
-#pragma warning restore IDE1006 // 命名样式
-        {
-            Debug.WriteLine(message);
-        }
-        #endregion
     }
 }
