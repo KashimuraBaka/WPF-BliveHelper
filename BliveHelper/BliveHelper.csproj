@@ -151,6 +151,8 @@
     <Compile Include="Utils\Obs\ObsWebSocketModels.cs" />
     <Compile Include="Utils\Structs\RelayCommand.cs" />
     <Compile Include="Utils\Structs\UnixTimestampConverter.cs" />
+    <Compile Include="Views\Components\TextBoxAssist.cs" />
+    <Compile Include="Views\Components\ButtonAssist.cs" />
     <Compile Include="Views\Components\ImageListBox.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
     <Compile Include="Views\Components\TabItemModel.cs" />
@@ -172,6 +174,7 @@
     <Compile Include="Views\Pages\ObsSettingsPage.xaml.cs">
       <DependentUpon>ObsSettingsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Windows\BaseWindow.cs" />
     <Compile Include="Views\Windows\MainWindows.xaml.cs">
       <DependentUpon>MainWindows.xaml</DependentUpon>
     </Compile>
@@ -190,7 +193,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Styles\Button.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Styles\ImageListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\TabControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\TextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

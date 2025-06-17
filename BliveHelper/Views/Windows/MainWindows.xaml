@@ -1,4 +1,4 @@
-﻿<structs:ObservableWindow
+﻿<local:BaseWindow
     x:Class="BliveHelper.Views.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,18 +7,27 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BliveHelper.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:structs="clr-namespace:BliveHelper.Utils.Structs"
     Title="{Binding UserStateText, StringFormat=直播间助手 {0}}"
     Width="750"
     Height="500"
     d:DataContext="{d:DesignInstance Type=local:MainWindow}"
     ResizeMode="NoResize"
+    UseLayoutRounding="True"
     mc:Ignorable="d">
-    <structs:ObservableWindow.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converter:ValueToBooleanConverter x:Key="ValueToBooleanConverter" />
-    </structs:ObservableWindow.Resources>
+    <!--  全局资源  -->
+    <local:BaseWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/BliveHelper;component/Resources/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:BaseWindow.Resources>
+    <!--  主要内容  -->
     <Grid>
+        <Grid.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converter:ValueToBooleanConverter x:Key="ValueToBooleanConverter" />
+        </Grid.Resources>
         <!--  主要显示内容  -->
         <Grid Margin="8,8,8,6" IsEnabled="{Binding Info.UserName, Converter={StaticResource ValueToBooleanConverter}}">
             <Grid.RowDefinitions>
@@ -26,34 +35,17 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid Margin="0,0,0,6">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <DockPanel Grid.Column="0" HorizontalAlignment="Left">
-                    <DockPanel.Resources>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="Cursor" Value="Hand" />
-                            <Setter Property="Background" Value="Transparent" />
-                            <Setter Property="BorderThickness" Value="0" />
-                            <Setter Property="Padding" Value="0" />
-                            <Setter Property="Foreground" Value="#FF007BD7" />
-                            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type Button}">
-                                        <ContentPresenter />
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </DockPanel.Resources>
                     <TextBlock Margin="0,0,5,0" Text="房间号" />
                     <TextBlock Margin="0,0,5,0" Text="{Binding RoomIdText}" />
-                    <Button Margin="0,0,5,0" Command="{Binding OpenLivePageCommand}" Content="进入" />
-                    <Button Command="{Binding CopyLiveRoomdIdCommand}" Content="复制" />
+                    <Button Margin="0,0,5,0" Command="{Binding OpenLivePageCommand}" Content="进入" Style="{StaticResource TextButton}" />
+                    <Button Command="{Binding CopyLiveRoomdIdCommand}" Content="复制" Style="{StaticResource TextButton}" />
                 </DockPanel>
                 <DockPanel Grid.Column="1" HorizontalAlignment="Left">
                     <TextBlock Margin="0,0,5,0" Text="OBS 状态:" />
@@ -62,14 +54,18 @@
                 <Button
                     Grid.Column="2"
                     Margin="5,0,0,0"
-                    Padding="2,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
+                    Padding="4,2"
                     Command="{Binding SignOutCommand}"
                     Content="退出登录"
+                    Style="{StaticResource RedButton}"
                     Visibility="{Binding ShowSignOutButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </Grid>
-            <TabControl Grid.Row="1" Padding="0" ItemsSource="{Binding Pages, RelativeSource={RelativeSource AncestorType=Window}}" SelectedItem="{Binding SelectedPage, RelativeSource={RelativeSource AncestorType=Window}}">
+            <TabControl
+                Grid.Row="1"
+                Padding="0"
+                Background="Transparent"
+                ItemsSource="{Binding Pages, RelativeSource={RelativeSource AncestorType=Window}}"
+                SelectedItem="{Binding SelectedPage, RelativeSource={RelativeSource AncestorType=Window}}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Header}" />
@@ -104,7 +100,7 @@
             </Grid>
         </Grid>
         <!--  二维码  -->
-        <Border Grid.RowSpan="3" Padding="10" Background="#55000000" Visibility="{Binding ScanQR, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Border Padding="10" Background="#55000000" Visibility="{Binding ScanQR, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -121,4 +117,4 @@
             </Grid>
         </Border>
     </Grid>
-</structs:ObservableWindow>
+</local:BaseWindow>
