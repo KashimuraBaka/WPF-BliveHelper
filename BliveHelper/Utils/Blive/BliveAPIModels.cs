@@ -477,4 +477,35 @@ namespace BliveHelper.Utils.Blive
         [JsonProperty("content")]
         public string Content { get; set; }
     }
+
+    public class BliveBackgroundInfo
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+        [JsonProperty("url")]
+        public string Url { get; set; } = string.Empty;
+    }
+
+    public class BliveBackgroundData
+    {
+        [JsonProperty("can_upload")]
+        public bool CanUpload { get; set; }
+        [JsonProperty("no_upload_reason")]
+        public string NoUploadReason { get; set; } = string.Empty;
+        [JsonProperty("default")]
+        public BliveBackgroundInfo[] DefaultBackgrounds { get; set; }
+        [JsonProperty("custom")]
+        public BliveBackgroundInfo[] CustomBackgrounds { get; set; }
+    }
+
+    public class BliveUpdateBackgroundRequest : BliveCsrf
+    {
+        [JsonProperty("room_id")]
+        public long RoomId { get; set; }
+        [JsonProperty("bg_id")]
+        public int BackgroundId { get; set; }
+        [JsonProperty("visit_id")]
+        public int? VisitId { get; set; } = null;
+    }
+
 }

@@ -372,6 +372,25 @@ namespace BliveHelper.Utils.Blive
             return response != null && response.Code == 0;
         }
 
+        public async Task<List<BliveBackgroundInfo>> GetLiveBackgrounds(long roomId)
+        {
+            var backgrounds = new List<BliveBackgroundInfo>();
+            var response = await Get<BliveBackgroundData>($"{BLIVE_API_URL}/room/v1/Bg/get_list?room_id={roomId}");
+            if (response != null && response.Code == 0)
+            {
+                backgrounds.AddRange(response.Data.DefaultBackgrounds);
+                backgrounds.AddRange(response.Data.CustomBackgrounds);
+            }
+            return backgrounds;
+        }
+
+        public async Task<bool> UpdateLiveBackground(long roomId, int backgroundId)
+        {
+            var requestData = new BliveUpdateBackgroundRequest() { RoomId = roomId, BackgroundId = backgroundId };
+            var response = await PostFormUrlEncoded<object>($"{BLIVE_API_URL}/room/v1/Bg/update_bg", requestData);
+            return response != null && response.Code == 0;
+        }
+
         public async Task<BiliUIDInfo[]> NameToUID(IEnumerable<string> names)
         {
             if (names.Count() > 0)
