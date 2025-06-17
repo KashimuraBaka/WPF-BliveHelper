@@ -34,10 +34,13 @@
                 Grid.Row="1"
                 Height="2"
                 Margin="12,0"
-                Background="#FF6699"
+                Background="{Binding Path=(components:ElementAssist.HoverBrush), RelativeSource={RelativeSource AncestorType=TabControl}}"
                 CornerRadius="2" />
         </Grid>
         <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Foreground" Value="{Binding Path=(components:ElementAssist.HoverBrush), RelativeSource={RelativeSource AncestorType=TabControl}}" />
+            </Trigger>
             <Trigger Property="IsSelected" Value="False">
                 <Setter TargetName="Underline" Property="Visibility" Value="Hidden" />
             </Trigger>
@@ -50,5 +53,6 @@
     <Style TargetType="{x:Type TabControl}">
         <Setter Property="Template" Value="{StaticResource TabControlTemplate}" />
         <Setter Property="ItemContainerStyle" Value="{StaticResource TabControlItemContainerStyle}" />
+        <Setter Property="components:ElementAssist.HoverBrush" Value="#FF6699" />
     </Style>
 </ResourceDictionary>
