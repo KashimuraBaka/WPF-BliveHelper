@@ -1,6 +1,5 @@
 ﻿using BilibiliDM_PluginFramework;
 using BliveHelper.Utils;
-using System;
 using System.IO;
 
 namespace BliveHelper
@@ -64,12 +63,6 @@ namespace BliveHelper
 
         private void OnReceivedRoomCount(object sender, ReceivedRoomCountArgs e)
         {
-        }
-
-        private void OnError(object sender, UnhandledExceptionEventArgs e)
-        {
-            var obj = (Exception)e.ExceptionObject;
-            ENV.Log(obj.ToString());
         }
     }
 }

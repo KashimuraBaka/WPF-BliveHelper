@@ -2,6 +2,7 @@
 using BliveHelper.Utils;
 using BliveHelper.Views.Windows;
 using System;
+using System.Windows;
 
 namespace BliveHelper
 {
@@ -23,7 +24,12 @@ namespace BliveHelper
             Disconnected += OnDisconnected;
             ReceivedDanmaku += OnReceivedDanmaku;
             ReceivedRoomCount += OnReceivedRoomCount;
-            AppDomain.CurrentDomain.UnhandledException += OnError;
+
+            // 设置全局样式
+            AdminWindow.Resources.MergedDictionaries.Add(new ResourceDictionary()
+            {
+                Source = new Uri("/BliveHelper;component/Resources/Styles.xaml", UriKind.Relative)
+            });
         }
     }
 }
