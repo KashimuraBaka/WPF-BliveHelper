@@ -1,4 +1,4 @@
-﻿<utils:ObservableUserControl
+﻿<structs:ObservableUserControl
     x:Class="BliveHelper.Views.Pages.LiveSettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BliveHelper.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:utils="clr-namespace:BliveHelper.Utils.Structs"
+    xmlns:structs="clr-namespace:BliveHelper.Utils.Structs"
     Padding="10"
     d:DataContext="{d:DesignInstance Type=local:LiveSettingsPage}"
     d:DesignHeight="450"
@@ -81,4 +81,4 @@
                 IsEnabled="{Binding StartEnable}" />
         </Grid>
     </Grid>
-</utils:ObservableUserControl>
+</structs:ObservableUserControl>
