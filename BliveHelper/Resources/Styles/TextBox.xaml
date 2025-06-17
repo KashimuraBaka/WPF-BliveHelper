@@ -2,8 +2,8 @@
     <Style x:Key="DefaultTextBox" TargetType="{x:Type TextBox}">
         <Setter Property="BorderBrush" Value="#E3E5E7" />
         <Setter Property="Padding" Value="2" />
-        <Setter Property="components:TextBoxAssist.CornerRadius" Value="4" />
-        <Setter Property="components:TextBoxAssist.BorderHoverBrush" Value="#FF6699" />
+        <Setter Property="components:ElementAssist.CornerRadius" Value="4" />
+        <Setter Property="components:ElementAssist.BorderHoverBrush" Value="#FF6699" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
@@ -12,7 +12,7 @@
                         Padding="{TemplateBinding Padding}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding components:TextBoxAssist.CornerRadius}">
+                        CornerRadius="{TemplateBinding components:ElementAssist.CornerRadius}">
                         <ScrollViewer
                             x:Name="PART_ContentHost"
                             HorizontalAlignment="Stretch"
@@ -32,7 +32,7 @@
                                 <Condition Property="IsReadOnly" Value="False" />
                                 <Condition Property="IsFocused" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="PART_ContentBorder" Property="BorderBrush" Value="{Binding Path=(components:TextBoxAssist.BorderHoverBrush), RelativeSource={RelativeSource TemplatedParent}}" />
+                            <Setter TargetName="PART_ContentBorder" Property="BorderBrush" Value="{Binding Path=(components:ElementAssist.BorderHoverBrush), RelativeSource={RelativeSource TemplatedParent}}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
