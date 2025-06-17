@@ -19,7 +19,7 @@ namespace BliveHelper.Views.Windows
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : ObservableWindow
+    public partial class MainWindow : BaseWindow
     {
         private ObsWebSocketAPI WebSocket => ENV.WebSocket;
         public BliveInfo Info => ENV.BliveInfo;
