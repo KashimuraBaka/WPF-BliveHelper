@@ -79,7 +79,7 @@
     <Compile Include="Utils\Blive\BliveAPI.cs" />
     <Compile Include="Utils\Blive\BliveAPIModels.cs" />
     <Compile Include="Utils\Config.WebSocket.cs" />
-    <Compile Include="Utils\Converter\ValueToBooleanConverter.cs" />
+    <Compile Include="Utils\Converters\ValueToBooleanConverter.cs" />
     <Compile Include="Utils\ENV.cs" />
     <Compile Include="Utils\QRCoder\AbstractQRCode.cs" />
     <Compile Include="Utils\QRCoder\ASCIIQRCode.cs" />
@@ -151,8 +151,7 @@
     <Compile Include="Utils\Obs\ObsWebSocketModels.cs" />
     <Compile Include="Utils\Structs\RelayCommand.cs" />
     <Compile Include="Utils\Structs\UnixTimestampConverter.cs" />
-    <Compile Include="Views\Components\TextBoxAssist.cs" />
-    <Compile Include="Views\Components\ButtonAssist.cs" />
+    <Compile Include="Views\Components\ElementAssist.cs" />
     <Compile Include="Views\Components\ImageListBox.cs" />
     <Compile Include="Views\Components\PasswordBox.cs" />
     <Compile Include="Views\Components\TabItemModel.cs" />
@@ -197,7 +196,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Styles\ComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\DataGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Styles\ImageListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\ScrollBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -238,5 +249,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace BliveHelper.Utils.Converter
+namespace BliveHelper.Utils.Converters
 {
     internal class ValueToBooleanConverter : IValueConverter
     {

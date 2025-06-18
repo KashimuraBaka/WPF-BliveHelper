@@ -7,45 +7,51 @@
     xmlns:local="clr-namespace:BliveHelper.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:structs="clr-namespace:BliveHelper.Utils.Structs"
-    Padding="10"
     d:DataContext="{d:DesignInstance Type=local:ObsSettingsPage}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
-            <StackPanel.Resources>
-                <Style TargetType="{x:Type DockPanel}">
-                    <Setter Property="Margin" Value="0,0,0,10" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                </Style>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="Margin" Value="0,0,10,0" />
-                    <Setter Property="Width" Value="80" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                </Style>
-            </StackPanel.Resources>
-            <TextBlock
+    <Border
+        Padding="8"
+        Background="White"
+        BorderBrush="#E9EAEC"
+        BorderThickness="1"
+        CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type DockPanel}">
+                        <Setter Property="Margin" Value="0,0,0,10" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Setter Property="Margin" Value="0,0,10,0" />
+                        <Setter Property="Width" Value="80" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock
                 Width="Auto"
                 Margin="0,0,0,10"
                 HorizontalAlignment="Left"
                 Foreground="#61666D"
                 Text="OBS 插件设置方法:  OBS 界面 &gt; 工具 &gt; WebSocket 服务器设置" />
-            <DockPanel>
-                <TextBlock Text="服务器地址" />
-                <TextBox Text="{Binding ServerUrl}" />
+                <DockPanel>
+                    <TextBlock Text="服务器地址" />
+                    <TextBox Text="{Binding ServerUrl}" />
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="服务器密码" />
+                    <components:PasswordBox Password="{Binding ServerKey}" />
+                </DockPanel>
+            </StackPanel>
+            <DockPanel Grid.Row="1">
+                <Button Padding="16,8" Command="{Binding SaveWebsocketSettingCommand}" Content="保存" IsEnabled="{Binding SaveEnable}" />
             </DockPanel>
-            <DockPanel>
-                <TextBlock Text="服务器密码" />
-                <components:PasswordBox Password="{Binding ServerKey}" />
-            </DockPanel>
-        </StackPanel>
-        <DockPanel Grid.Row="1">
-            <Button Padding="16,8" Command="{Binding SaveWebsocketSettingCommand}" Content="保存" IsEnabled="{Binding SaveEnable}" />
-        </DockPanel>
-    </Grid>
+        </Grid>
+    </Border>
 </structs:ObservableUserControl>

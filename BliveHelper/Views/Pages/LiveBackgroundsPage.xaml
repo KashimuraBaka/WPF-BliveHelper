@@ -12,11 +12,18 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <components:ImageListBox ItemColumn="3" ItemsSource="{Binding Backgrounds}" SelectedItem="{Binding SelectedBackground}">
-        <components:ImageListBox.ItemTemplate>
-            <DataTemplate DataType="{x:Type blive:BliveBackgroundInfo}">
-                <Image Cursor="Hand" Source="{Binding Url}" Stretch="UniformToFill" />
-            </DataTemplate>
-        </components:ImageListBox.ItemTemplate>
-    </components:ImageListBox>
+    <Border
+        Padding="4"
+        Background="White"
+        BorderBrush="#E9EAEC"
+        BorderThickness="1"
+        CornerRadius="8">
+        <components:ImageListBox ItemColumn="3" ItemsSource="{Binding Backgrounds}" SelectedItem="{Binding SelectedBackground}">
+            <components:ImageListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type blive:BliveBackgroundInfo}">
+                    <Image Cursor="Hand" Source="{Binding Url}" Stretch="UniformToFill" />
+                </DataTemplate>
+            </components:ImageListBox.ItemTemplate>
+        </components:ImageListBox>
+    </Border>
 </structs:ObservableUserControl>

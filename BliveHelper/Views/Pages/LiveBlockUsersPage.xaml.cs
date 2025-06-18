@@ -45,7 +45,10 @@ namespace BliveHelper.Views.Pages
 
         public void SaveUID()
         {
-            Clipboard.SetDataObject(SelectedDanmaku.UserId.ToString());
+            if (SelectedDanmaku != null)
+            {
+                Clipboard.SetDataObject(SelectedDanmaku.UserId.ToString());
+            }
         }
 
         private async void RefreshBlockUsers()
@@ -56,7 +59,7 @@ namespace BliveHelper.Views.Pages
 
         private async void BlockUser(string timeStr)
         {
-            if (int.TryParse(timeStr, out var time))
+            if (SelectedDanmaku != null && int.TryParse(timeStr, out var time))
             {
                 var message = await ENV.BliveAPI.AddBlockUser(ENV.BliveInfo.RoomId, SelectedDanmaku.UserId.ToString(), time);
                 if (!string.IsNullOrEmpty(message))
@@ -72,15 +75,17 @@ namespace BliveHelper.Views.Pages
 
         private async void RemoveBlockUser()
         {
-            if (SelectedBlockUser == null) return;
-            var message = await ENV.BliveAPI.RemoveBlockUser(ENV.BliveInfo.RoomId, SelectedBlockUser.BlockId);
-            if (!string.IsNullOrEmpty(message))
+            if (SelectedBlockUser != null)
             {
-                MessageBox.Show(message, "解除封禁失败", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                BlockUsers.Remove(SelectedBlockUser);
+                var message = await ENV.BliveAPI.RemoveBlockUser(ENV.BliveInfo.RoomId, SelectedBlockUser.BlockId);
+                if (!string.IsNullOrEmpty(message))
+                {
+                    MessageBox.Show(message, "解除封禁失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    BlockUsers.Remove(SelectedBlockUser);
+                }
             }
         }
     }

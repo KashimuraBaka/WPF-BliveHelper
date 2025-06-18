@@ -2,6 +2,7 @@
     <Style x:Key="DefaultTextBox" TargetType="{x:Type TextBox}">
         <Setter Property="Padding" Value="2" />
         <Setter Property="BorderBrush" Value="#E3E5E7" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="components:ElementAssist.CornerRadius" Value="4" />
         <Setter Property="components:ElementAssist.BorderHoverBrush" Value="#FF6699" />
         <Setter Property="Template">
@@ -10,6 +11,7 @@
                     <Border
                         x:Name="PART_ContentBorder"
                         Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding components:ElementAssist.CornerRadius}">

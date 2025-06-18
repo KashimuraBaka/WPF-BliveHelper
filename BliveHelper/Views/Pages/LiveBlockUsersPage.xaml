@@ -10,86 +10,63 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <TabControl Padding="0">
-        <TabItem Header="当前用户">
-            <DataGrid
-                AutoGenerateColumns="False"
-                Background="Transparent"
-                BorderThickness="0"
-                CanUserAddRows="False"
-                ItemsSource="{Binding Danmakus}"
-                SelectedItem="{Binding SelectedDanmaku}"
-                SelectionMode="Single"
-                SelectionUnit="FullRow">
-                <DataGrid.Style>
-                    <Style TargetType="{x:Type DataGrid}">
-                        <Setter Property="ContextMenu">
-                            <Setter.Value>
-                                <ContextMenu>
-                                    <MenuItem Command="{Binding CopyUIDCommand}" Header="复制当前 UID" />
-                                    <Separator />
-                                    <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="1" Header="封禁 1 小时" />
-                                    <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="6" Header="封禁 6 小时" />
-                                    <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="24" Header="封禁 1 天" />
-                                    <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="168" Header="封禁 7 天" />
-                                    <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="720" Header="封禁 30 天" />
-                                </ContextMenu>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="SelectedItem" Value="{x:Null}">
-                                <Setter Property="ContextMenu" Value="{x:Null}" />
-                            </Trigger>
-                            <DataTrigger Binding="{Binding SelectedDanmaku.UserId}" Value="0">
-                                <Setter Property="ContextMenu" Value="{x:Null}" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.Style>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding MessageTime}" Header="发送时间" IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding UserId}" Header="用户ID" IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding UserName}" Header="用户名" IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding GuardLevel}" Header="粉丝牌" IsReadOnly="True" />
-                    <DataGridTextColumn Width="*" Binding="{Binding Message}" Header="发送消息" IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </TabItem>
-        <TabItem Header="封禁列表">
-            <DataGrid
-                AutoGenerateColumns="False"
-                Background="Transparent"
-                BorderThickness="0"
-                CanUserAddRows="False"
-                ItemsSource="{Binding BlockUsers}"
-                SelectedItem="{Binding SelectedBlockUser}"
-                SelectionMode="Single"
-                SelectionUnit="FullRow">
-                <DataGrid.Style>
-                    <Style TargetType="{x:Type DataGrid}">
-                        <Setter Property="ContextMenu">
-                            <Setter.Value>
-                                <ContextMenu>
-                                    <MenuItem Command="{Binding RemoveBlockUserCommand}" Header="移除封禁" />
-                                </ContextMenu>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="SelectedItem" Value="{x:Null}">
-                                <Setter Property="ContextMenu" Value="{x:Null}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.Style>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding UserId}" Header="用户ID" IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding UserName}" Header="用户名" IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding CreationTime}" Header="封禁时间" IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding ModificationTime}" Header="修改时间" IsReadOnly="True" />
-                    <DataGridTextColumn Binding="{Binding BlockEndTime}" Header="结束时间" IsReadOnly="True" />
-                    <DataGridTextColumn Width="*" Binding="{Binding AdminUserName}" Header="操作人" IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </TabItem>
-    </TabControl>
+    <Border Background="White" BorderBrush="#E9EAEC" BorderThickness="1" CornerRadius="8">
+        <TabControl Padding="0">
+            <TabItem Header="当前用户">
+                <DataGrid
+                    AutoGenerateColumns="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    CanUserAddRows="False"
+                    ItemsSource="{Binding Danmakus}"
+                    SelectedItem="{Binding SelectedDanmaku}"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Command="{Binding CopyUIDCommand}" Header="复制当前 UID" />
+                            <Separator />
+                            <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="1" Header="封禁 1 小时" />
+                            <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="6" Header="封禁 6 小时" />
+                            <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="24" Header="封禁 1 天" />
+                            <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="168" Header="封禁 7 天" />
+                            <MenuItem Command="{Binding BlockUserCommand}" CommandParameter="720" Header="封禁 30 天" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding MessageTime}" Header="发送时间" IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding UserId}" Header="用户ID" IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding UserName}" Header="用户名" IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding GuardLevel}" Header="粉丝牌" IsReadOnly="True" />
+                        <DataGridTextColumn Width="*" Binding="{Binding Message}" Header="发送消息" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="封禁列表">
+                <DataGrid
+                    AutoGenerateColumns="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    CanUserAddRows="False"
+                    ItemsSource="{Binding BlockUsers}"
+                    SelectedItem="{Binding SelectedBlockUser}"
+                    SelectionMode="Single"
+                    SelectionUnit="FullRow">
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Command="{Binding RemoveBlockUserCommand}" Header="移除封禁" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding UserId}" Header="用户ID" IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding UserName}" Header="用户名" IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding CreationTime}" Header="封禁时间" IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding ModificationTime}" Header="修改时间" IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding BlockEndTime}" Header="结束时间" IsReadOnly="True" />
+                        <DataGridTextColumn Width="*" Binding="{Binding AdminUserName}" Header="操作人" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Border>
 </structs:ObservableUserControl>

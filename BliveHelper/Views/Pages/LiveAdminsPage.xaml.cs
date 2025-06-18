@@ -3,6 +3,7 @@ using BliveHelper.Utils.Blive;
 using BliveHelper.Utils.Structs;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Input;
 
@@ -43,10 +44,13 @@ namespace BliveHelper.Views.Pages
         public ICommand AddAdminCommand => new RelayCommand(AddAdmin);
         public ICommand RemoveAdminCommand => new RelayCommand(RemoveAdmin);
 
+        public string AdminInfoText => $"当前房管数: {Admins.Count}/{MaxAdminsCount}";
+
         public LiveAdminsPage() : base()
         {
             InitializeComponent();
             Loaded += LiveAdminsPage_Loaded;
+            Admins.CollectionChanged += Admins_CollectionChanged;
         }
 
         private async void LiveAdminsPage_Loaded(object sender, RoutedEventArgs e)
@@ -55,6 +59,11 @@ namespace BliveHelper.Views.Pages
             MaxAdminsCount = res.MaxRoomAnchorsNumber;
             Admins.Clear();
             Admins.AddRange(res.Admins);
+        }
+
+        private void Admins_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            NotifyPropertyChanged(nameof(AdminInfoText));
         }
 
         private async void RemoveAdmin()

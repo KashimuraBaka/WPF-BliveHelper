@@ -2,6 +2,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Styles/Button.xaml" />
         <ResourceDictionary Source="Styles/ComboBox.xaml" />
+        <ResourceDictionary Source="Styles/DataGrid.xaml" />
         <ResourceDictionary Source="Styles/ImageListBox.xaml" />
         <ResourceDictionary Source="Styles/TabControl.xaml" />
         <ResourceDictionary Source="Styles/TextBox.xaml" />

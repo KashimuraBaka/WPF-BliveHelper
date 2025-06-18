@@ -46,7 +46,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="Foreground" Value="#FF007BD7" />
+        <Setter Property="Foreground" Value="#61666D" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -55,6 +55,11 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="#FF6699" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style BasedOn="{StaticResource DefaultButton}" TargetType="{x:Type Button}" />
 </ResourceDictionary>
