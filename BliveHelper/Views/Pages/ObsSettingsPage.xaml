@@ -25,10 +25,16 @@
                 </Style>
                 <Style TargetType="{x:Type TextBlock}">
                     <Setter Property="Margin" Value="0,0,10,0" />
-                    <Setter Property="Width" Value="100" />
+                    <Setter Property="Width" Value="80" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
                 </Style>
             </StackPanel.Resources>
-            <TextBlock Width="Auto" Margin="0,0,0,10" HorizontalAlignment="Left" Text="OBS 插件设置方法:  OBS 界面 &gt; 工具 &gt; WebSocket 服务器设置" />
+            <TextBlock
+                Width="Auto"
+                Margin="0,0,0,10"
+                HorizontalAlignment="Left"
+                Foreground="#61666D"
+                Text="OBS 插件设置方法:  OBS 界面 &gt; 工具 &gt; WebSocket 服务器设置" />
             <DockPanel>
                 <TextBlock Text="服务器地址" />
                 <TextBox Text="{Binding ServerUrl}" />

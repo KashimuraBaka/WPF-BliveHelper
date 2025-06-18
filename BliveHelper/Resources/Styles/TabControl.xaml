@@ -48,6 +48,7 @@
     </ControlTemplate>
     <Style x:Key="TabControlItemContainerStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template" Value="{StaticResource TabControlItemTemplate}" />
     </Style>
     <Style TargetType="{x:Type TabControl}">

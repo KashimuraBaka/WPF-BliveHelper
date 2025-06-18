@@ -7,7 +7,7 @@
     xmlns:local="clr-namespace:BliveHelper.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:structs="clr-namespace:BliveHelper.Utils.Structs"
-    Padding="10"
+    Padding="8"
     d:DataContext="{d:DesignInstance Type=local:LiveSettingsPage}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -20,7 +20,7 @@
             </Style>
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="Margin" Value="0,0,10,0" />
-                <Setter Property="Width" Value="100" />
+                <Setter Property="Width" Value="80" />
                 <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
         </Grid.Resources>

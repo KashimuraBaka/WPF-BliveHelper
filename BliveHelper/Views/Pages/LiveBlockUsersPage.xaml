@@ -6,7 +6,6 @@
     xmlns:local="clr-namespace:BliveHelper.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:structs="clr-namespace:BliveHelper.Utils.Structs"
-    Padding="2"
     d:DataContext="{d:DesignInstance Type=local:LiveBlockUsersPage}"
     d:DesignHeight="450"
     d:DesignWidth="800"
