@@ -18,9 +18,9 @@ namespace BliveHelper.Views.Pages
             get => selectedBackground;
             set
             {
-                OnSelectedCoverChanged(SelectedBackground, value); 
+                OnSelectedCoverChanged(SelectedBackground, value);
                 SetProperty(ref selectedBackground, value);
-            } 
+            }
         }
 
         public ObservableCollection<BliveBackgroundInfo> Backgrounds { get; } = new ObservableCollection<BliveBackgroundInfo>();

@@ -1,8 +1,6 @@
 ﻿using BilibiliDM_PluginFramework;
 using BliveHelper.Utils;
 using BliveHelper.Views.Windows;
-using System;
-using System.Windows;
 
 namespace BliveHelper
 {
