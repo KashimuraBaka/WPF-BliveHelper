@@ -27,5 +27,4 @@ namespace BliveHelper.Views.Windows
             return true;
         }
     }
-
 }
