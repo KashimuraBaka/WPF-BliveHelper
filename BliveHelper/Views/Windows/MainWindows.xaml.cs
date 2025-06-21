@@ -11,7 +11,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace BliveHelper.Views.Windows
@@ -73,14 +75,17 @@ namespace BliveHelper.Views.Windows
         // 命令
         public ICommand SignOutCommand => new RelayCommand(SignOut);
         public ICommand SendDanmuCommand => new RelayCommand(SendDanmu);
+        public ICommand OpenUserPageCommand => new RelayCommand(OpenUserPage);
+        public ICommand CopyUserIdCommand => new RelayCommand(CopyUserId);
         public ICommand OpenLivePageCommand => new RelayCommand(OpenLivePage);
         public ICommand CopyLiveRoomdIdCommand => new RelayCommand(CopyLiveRoomdId);
+        public ICommand CloseCommand => new RelayCommand(Close);
 
         public bool ShowSignOutButton => !ScanQR;
         public string WebSocketConnectText => WebSocket.IsOpen ? "已连接" : "已断开";
         public string WebSocketVersionText => WebSocket.IsOpen ? $"[OBS版本: {WebSocket.ObsStudioVerison}, 插件版本: {WebSocket.ObsPluginVersion}]" : string.Empty;
         public string WebSocketStateText => $"{WebSocketConnectText} {WebSocketVersionText}";
-        public string UserStateText => string.IsNullOrEmpty(Info.UserName) ? string.Empty : $"(已登录: {Info.UserName}, UID: {Info.UserId})";
+        public string UserName => string.IsNullOrEmpty(Info.UserName) ? "未登录" : Info.UserName;
         public string RoomIdText => Info.IsStart ? $"{Info.RoomId} [正在直播]" : (Info.RoomId > 0 ? Info.RoomId.ToString() : "未登录");
 
         public MainWindow() : base()
@@ -133,7 +138,7 @@ namespace BliveHelper.Views.Windows
                     NotifyPropertyChanged(nameof(RoomIdText));
                     break;
                 case nameof(Info.UserName):
-                    NotifyPropertyChanged(nameof(UserStateText));
+                    NotifyPropertyChanged(nameof(UserName));
                     break;
             }
         }
@@ -170,6 +175,16 @@ namespace BliveHelper.Views.Windows
                 DanmuMessage = string.Empty;
             }
             DanmuEnable = true;
+        }
+
+        private void OpenUserPage()
+        {
+            Process.Start(new ProcessStartInfo { FileName = $"https://space.bilibili.com/{Info.UserId}", UseShellExecute = true });
+        }
+
+        private void CopyUserId()
+        {
+            Clipboard.SetDataObject(Info.UserId.ToString());
         }
 
         private void OpenLivePage()
@@ -221,6 +236,24 @@ namespace BliveHelper.Views.Windows
                     await Task.Delay(1000);
                 }
             }
+        }
+
+        private void OnToolBarMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton is MouseButtonState.Pressed && !IsDescendantOfButton(e.OriginalSource as DependencyObject))
+            {
+                DragMove();
+            }
+        }
+
+        private static bool IsDescendantOfButton(DependencyObject source)
+        {
+            while (source != null)
+            {
+                if (source is Button) return true;
+                source = VisualTreeHelper.GetParent(source);
+            }
+            return false;
         }
     }
 }

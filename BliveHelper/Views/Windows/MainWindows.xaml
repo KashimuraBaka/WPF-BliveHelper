@@ -7,13 +7,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BliveHelper.Views.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="{Binding UserStateText, StringFormat=直播间助手 {0}}"
+    Title="BliveHelper"
     Width="750"
     Height="500"
     d:DataContext="{d:DesignInstance Type=local:MainWindow}"
-    Background="#F5F5F8"
+    Background="White"
     ResizeMode="NoResize"
     UseLayoutRounding="True"
+    WindowStyle="None"
     mc:Ignorable="d">
     <!--  全局资源  -->
     <local:BaseWindow.Resources>
@@ -24,98 +25,138 @@
         </ResourceDictionary>
     </local:BaseWindow.Resources>
     <!--  主要内容  -->
-    <Grid>
-        <Grid.Resources>
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-            <converters:ValueToBooleanConverter x:Key="ValueToBooleanConverter" />
-        </Grid.Resources>
-        <!--  主要显示内容  -->
-        <Grid Margin="8,8,8,6" IsEnabled="{Binding Info.UserName, Converter={StaticResource ValueToBooleanConverter}}">
+    <Border BorderBrush="#A6AEBC" BorderThickness="1">
+        <Grid>
+            <Grid.Resources>
+                <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+                <converters:ValueToBooleanConverter x:Key="ValueToBooleanConverter" />
+            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <DockPanel Grid.Column="0" HorizontalAlignment="Left">
-                    <TextBlock Margin="0,0,5,0" Text="房间号" />
-                    <Button Margin="0,0,5,0" Command="{Binding OpenLivePageCommand}" Content="{Binding RoomIdText}" Style="{StaticResource TextButton}" />
-                    <Button Command="{Binding CopyLiveRoomdIdCommand}" Content="复制" Style="{StaticResource TextButton}" />
-                </DockPanel>
-                <DockPanel Grid.Column="1" HorizontalAlignment="Left">
-                    <TextBlock Margin="0,0,5,0" Text="OBS 状态:" />
-                    <TextBlock Text="{Binding WebSocketStateText}" />
-                </DockPanel>
-                <Button
-                    Grid.Column="2"
-                    Margin="5,0,0,0"
-                    Padding="4,2"
-                    Command="{Binding SignOutCommand}"
-                    Content="退出登录"
-                    Style="{StaticResource RedButton}"
-                    Visibility="{Binding ShowSignOutButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
-            </Grid>
-            <TabControl
-                Grid.Row="1"
-                Padding="0"
-                Background="Transparent"
-                ItemsSource="{Binding Pages, RelativeSource={RelativeSource AncestorType=Window}}"
-                SelectedItem="{Binding SelectedPage, RelativeSource={RelativeSource AncestorType=Window}}">
-                <TabControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Header}" />
-                    </DataTemplate>
-                </TabControl.ItemTemplate>
-                <TabControl.ContentTemplate>
-                    <DataTemplate>
-                        <ContentControl Content="{Binding Content}" />
-                    </DataTemplate>
-                </TabControl.ContentTemplate>
-            </TabControl>
-            <Grid Grid.Row="2" Margin="0,5,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    Grid.Column="0"
-                    Width="Auto"
-                    Margin="0,0,5,0"
-                    VerticalAlignment="Center"
-                    Text="直播间聊天" />
-                <TextBox Grid.Column="1" Background="White" IsEnabled="{Binding DanmuEnable}" Text="{Binding DanmuMessage}" />
-                <Button
-                    Grid.Column="2"
-                    Width="60"
-                    Background="White"
-                    Margin="5,0,0,0"
-                    Command="{Binding SendDanmuCommand}"
-                    Content="发送"
-                    IsEnabled="{Binding DanmuEnable}" />
-            </Grid>
-        </Grid>
-        <!--  二维码  -->
-        <Border Padding="10" Background="#55000000" Visibility="{Binding ScanQR, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Grid>
+            <!--  工具栏  -->
+            <Border Padding="8,6,6,6" Background="#F5F5F8" PreviewMouseDown="OnToolBarMouseDown">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <DockPanel VerticalAlignment="Center">
+                        <TextBlock FontSize="14" Text="Bilibili 直播助手" />
+                    </DockPanel>
+                    <Separator Grid.Column="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                    <DockPanel Grid.Column="2" Margin="4,0,0,0">
+                        <Button Command="{Binding CloseCommand}" Style="{StaticResource IconButton}" Tag="Close" />
+                    </DockPanel>
+                </Grid>
+            </Border>
+            <!--  主要显示内容  -->
+            <Grid Grid.Row="1" Margin="8,8,8,6" IsEnabled="{Binding Info.UserName, Converter={StaticResource ValueToBooleanConverter}}">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Image Grid.Row="0" Cursor="Hand" PreviewMouseDown="OnQRImageMouseDown" Source="{Binding QrCodeImage}" />
-                <TextBlock
+                <Grid Margin="2,0,2,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <DockPanel Grid.Column="0" HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="账户" />
+                        <Button
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            Command="{Binding OpenUserPageCommand}"
+                            Content="{Binding UserName}"
+                            Style="{StaticResource TextButton}" />
+                        <Button VerticalAlignment="Center" Command="{Binding CopyUserIdCommand}" Content="复制" Style="{StaticResource TextButton}" />
+                    </DockPanel>
+                    <DockPanel Grid.Column="1" HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="房间号" />
+                        <Button
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            Command="{Binding OpenLivePageCommand}"
+                            Content="{Binding RoomIdText}"
+                            Style="{StaticResource TextButton}" />
+                        <Button VerticalAlignment="Center" Command="{Binding CopyLiveRoomdIdCommand}" Content="复制" Style="{StaticResource TextButton}" />
+                    </DockPanel>
+                    <DockPanel Grid.Column="2" HorizontalAlignment="Left">
+                        <TextBlock Margin="0,0,5,0" VerticalAlignment="Center" Text="OBS 状态:" />
+                        <TextBlock VerticalAlignment="Center" Foreground="#61666D" Text="{Binding WebSocketStateText}" />
+                    </DockPanel>
+                    <Button
+                        Grid.Column="3"
+                        Margin="5,0,0,0"
+                        Padding="4,2"
+                        VerticalAlignment="Center"
+                        Command="{Binding SignOutCommand}"
+                        Content="退出登录"
+                        Style="{StaticResource RedButton}"
+                        Visibility="{Binding ShowSignOutButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+                <TabControl
                     Grid.Row="1"
-                    Margin="0,5,0,0"
-                    FontSize="18"
-                    Foreground="White"
-                    Text="{Binding QrCodeMessage}"
-                    TextAlignment="Center" />
+                    Padding="0"
+                    Background="Transparent"
+                    ItemsSource="{Binding Pages, RelativeSource={RelativeSource AncestorType=Window}}"
+                    SelectedItem="{Binding SelectedPage, RelativeSource={RelativeSource AncestorType=Window}}">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Header}" />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{Binding Content}" />
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
+                <Grid Grid.Row="2" Margin="0,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        Width="Auto"
+                        Margin="0,0,5,0"
+                        VerticalAlignment="Center"
+                        Text="直播间聊天" />
+                    <TextBox Grid.Column="1" Background="White" IsEnabled="{Binding DanmuEnable}" Text="{Binding DanmuMessage}" />
+                    <Button
+                        Grid.Column="2"
+                        Width="60"
+                        Margin="5,0,0,0"
+                        Background="White"
+                        Command="{Binding SendDanmuCommand}"
+                        Content="发送"
+                        IsEnabled="{Binding DanmuEnable}" />
+                </Grid>
             </Grid>
-        </Border>
-    </Grid>
+            <!--  二维码  -->
+            <Border Grid.Row="1" Padding="10" Background="#55000000" Visibility="{Binding ScanQR, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Image Grid.Row="0" Cursor="Hand" PreviewMouseDown="OnQRImageMouseDown" Source="{Binding QrCodeImage}" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Margin="0,5,0,0"
+                        FontSize="18"
+                        Foreground="White"
+                        Text="{Binding QrCodeMessage}"
+                        TextAlignment="Center" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
 </local:BaseWindow>
