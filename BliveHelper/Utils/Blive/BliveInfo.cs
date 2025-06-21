@@ -1,10 +1,16 @@
 ﻿using BliveHelper.Utils.Structs;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BliveHelper.Utils.Blive
 {
     public class BliveInfo : ObservableObject
     {
+        private bool FirstLoad { get; set; } = true;
+
         #region 直播间信息
         private bool isStart;
         public bool IsStart
@@ -40,7 +46,12 @@ namespace BliveHelper.Utils.Blive
         public string SelectedArea
         {
             get => selectedArea;
-            set => SetProperty(ref selectedArea, value);
+            set
+            {
+                SetProperty(ref selectedArea, value);
+                NotifyPropertyChanged(nameof(LiveGames));
+                if (!FirstLoad) SelectedGame = LiveGames.FirstOrDefault()?.Name;
+            }
         }
         private string selectedGame;
         public string SelectedGame
@@ -77,6 +88,12 @@ namespace BliveHelper.Utils.Blive
         }
         #endregion
 
+        public int GameAreaID => LiveAreas.FirstOrDefault(x => x.Name == SelectedArea)?.List.FirstOrDefault(x => x.Name == SelectedGame)?.Id ?? 0;
+        public ObservableCollection<BliveArea> LiveAreas { get; } = new ObservableCollection<BliveArea>();
+        public IEnumerable<BliveGameAreaItem> LiveGames => LiveAreas.FirstOrDefault(x => x.Name == SelectedArea)?.List;
+
+        public event EventHandler OnInfoRefreshed;
+
         public BliveInfo()
         {
             AutoRefresh();
@@ -84,6 +101,9 @@ namespace BliveHelper.Utils.Blive
 
         private async void AutoRefresh()
         {
+            // 获取直播分区
+            LiveAreas.Clear();
+            LiveAreas.AddRange(await ENV.BliveAPI.GetAreas());
             // 监听直播间状态
             while (true)
             {
@@ -94,12 +114,16 @@ namespace BliveHelper.Utils.Blive
                     {
                         UserId = info.UserId;
                         UserName = info.UserName;
-                        SelectedArea = SelectedArea ?? info.ParentName;
-                        SelectedGame = SelectedGame ?? info.AreaV2Name;
-                        Title = Title ?? info.Title;
                         IsStart = info.LiveStatus is BliveState.Live;
                         RoomId = info.RoomId;
-                        News = News ?? info.AnchorContent;
+                        if (FirstLoad)
+                        {
+                            SelectedArea = info.ParentName;
+                            SelectedGame = info.AreaV2Name;
+                            Title = info.Title;
+                            News = info.AnchorContent;
+                            FirstLoad = false;
+                        }
                         // 获取推流码信息
                         if (StreamServerUrl is null || StreamServerKey is null)
                         {
@@ -112,6 +136,8 @@ namespace BliveHelper.Utils.Blive
                         }
                         // 获取身份码信息
                         BroadcastCode = BroadcastCode ?? await ENV.BliveAPI.GetOperationOnBroadcastCode();
+                        // 刷新事件
+                        OnInfoRefreshed?.Invoke(this, EventArgs.Empty);
                     }
                     await Task.Delay(5000);
                 }
@@ -120,6 +146,56 @@ namespace BliveHelper.Utils.Blive
                     await Task.Delay(100);
                 }
             }
+        }
+
+        public async Task<string> ToggleStreamLive()
+        {
+            if (!IsStart)
+            {
+                if (!string.IsNullOrEmpty(SelectedArea) && !string.IsNullOrEmpty(SelectedGame))
+                {
+                    var news_result = await ENV.BliveAPI.UpdateLiveNews(RoomId, UserId, News);
+                    var rtmp_result = await ENV.BliveAPI.StartLive(RoomId, Title, GameAreaID);
+                    if (news_result && rtmp_result != null && !string.IsNullOrEmpty(rtmp_result.ServerUrl))
+                    {
+                        IsStart = true;
+                        StreamServerUrl = rtmp_result.ServerUrl;
+                        StreamServerKey = rtmp_result.Code;
+                        await ENV.WebSocket.SetStreamServiceSettings(rtmp_result.ServerUrl, rtmp_result.Code);
+                        await ENV.WebSocket.StartStream();
+                        return string.Empty;
+                    }
+                    else
+                    {
+                        return "获取推流地址失败, 可能网络问题或者当前分区不支持推流码获取";
+                    }
+                }
+                else
+                {
+                    return "请选择直播分区";
+                }
+            }
+            else
+            {
+                var res = await ENV.BliveAPI.StopLive(RoomId);
+                if (res != null && res.Change == 1)
+                {
+                    IsStart = false;
+                    await ENV.WebSocket.StopStream();
+                }
+                return string.Empty;
+            }
+        }
+
+        public async Task<string> SaveSetting()
+        {
+            if (!string.IsNullOrEmpty(SelectedArea) && !string.IsNullOrEmpty(SelectedGame))
+            {
+                var info_result = await ENV.BliveAPI.SetLiveInfo(RoomId, Title, GameAreaID);
+                var news_result = await ENV.BliveAPI.UpdateLiveNews(RoomId, UserId, News);
+                return info_result.Success && news_result ? "修改完毕!" : info_result.Message;
+            }
+            return "请选择直播分区";
         }
     }
 }
