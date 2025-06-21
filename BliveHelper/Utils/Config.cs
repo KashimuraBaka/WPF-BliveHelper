@@ -64,6 +64,7 @@ namespace BliveHelper.Utils
                         Cookies = config.Cookies;
                         WebSocket.ServerUrl = config.webSocket.ServerUrl;
                         WebSocket.ServerKey = config.webSocket.ServerKey;
+                        WebSocket.AutoStream = config.webSocket.AutoStream;
                     }
                 }
             }

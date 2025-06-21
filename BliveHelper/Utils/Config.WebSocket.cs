@@ -20,5 +20,13 @@ namespace BliveHelper.Utils
             get => serverKey;
             set => SetProperty(ref serverKey, value);
         }
+
+        private bool autoStream;
+        [JsonProperty("auto_stream")]
+        public bool AutoStream
+        {
+            get => autoStream;
+            set => SetProperty(ref autoStream, value);
+        }
     }
 }
