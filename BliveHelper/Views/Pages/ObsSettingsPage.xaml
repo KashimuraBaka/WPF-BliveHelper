@@ -35,11 +35,11 @@
                     </Style>
                 </StackPanel.Resources>
                 <TextBlock
-                Width="Auto"
-                Margin="0,0,0,10"
-                HorizontalAlignment="Left"
-                Foreground="#61666D"
-                Text="OBS 插件设置方法:  OBS 界面 &gt; 工具 &gt; WebSocket 服务器设置" />
+                    Width="Auto"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Left"
+                    Foreground="#61666D"
+                    Text="OBS 插件设置方法:  OBS 界面 &gt; 工具 &gt; WebSocket 服务器设置" />
                 <DockPanel>
                     <TextBlock Text="服务器地址" />
                     <TextBox Text="{Binding ServerUrl}" />
@@ -47,6 +47,10 @@
                 <DockPanel>
                     <TextBlock Text="服务器密码" />
                     <components:PasswordBox Password="{Binding ServerKey}" />
+                </DockPanel>
+                <DockPanel>
+                    <TextBlock Text="自动开播" />
+                    <CheckBox Content="弹幕姬连接时, 自动开启直播和OBS推流 (启用后禁用手动开播)" IsChecked="{Binding AutoStream}" />
                 </DockPanel>
             </StackPanel>
             <DockPanel Grid.Row="1">

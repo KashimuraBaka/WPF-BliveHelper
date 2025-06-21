@@ -22,6 +22,12 @@ namespace BliveHelper.Views.Pages
             get => serverKey;
             set => SetProperty(ref serverKey, value);
         }
+        private bool autoStream;
+        public bool AutoStream
+        {
+            get => autoStream;
+            set => SetProperty(ref autoStream, value);
+        }
         private bool saveEnable = true;
         public bool SaveEnable
         {
@@ -42,6 +48,7 @@ namespace BliveHelper.Views.Pages
             // 获取设定绑定值
             ServerUrl = ENV.Config.WebSocket.ServerUrl;
             ServerKey = ENV.Config.WebSocket.ServerKey;
+            AutoStream = ENV.Config.WebSocket.AutoStream;
         }
 
         private async void SaveWebsocketSetting()
@@ -51,6 +58,7 @@ namespace BliveHelper.Views.Pages
                 // 保存设置
                 ENV.Config.WebSocket.ServerUrl = ServerUrl;
                 ENV.Config.WebSocket.ServerKey = ServerKey;
+                ENV.Config.WebSocket.AutoStream = AutoStream;
                 // 重连 WebSocket 服务
                 ENV.WebSocket.Connect(ServerUrl, ServerKey);
                 // 保存设置
