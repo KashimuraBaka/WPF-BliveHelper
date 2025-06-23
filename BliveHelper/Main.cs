@@ -10,12 +10,12 @@ namespace BliveHelper
 
         public Main()
         {
-            ENV.DanMuPlugin = this;
+            ENV.Plugin = this;
 
             PluginAuth = "Kashimura";
             PluginName = "BliveHelper";
             PluginCont = "kashimura@qq.com";
-            PluginVer = GetVersion();
+            PluginVer = ENV.AppVersion;
             PluginDesc = "Bilibili直播 开播助手";
 
             Connected += OnConnected;
