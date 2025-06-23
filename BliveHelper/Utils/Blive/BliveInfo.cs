@@ -150,41 +150,44 @@ namespace BliveHelper.Utils.Blive
 
         public async Task<string> ToggleStreamLive()
         {
-            if (!IsStart)
+            return IsStart ? await StopStreamLive() : await StartStreamLive();
+        }
+
+        public async Task<string> StartStreamLive()
+        {
+            if (!string.IsNullOrEmpty(SelectedArea) && !string.IsNullOrEmpty(SelectedGame))
             {
-                if (!string.IsNullOrEmpty(SelectedArea) && !string.IsNullOrEmpty(SelectedGame))
+                var news_result = await ENV.BliveAPI.UpdateLiveNews(RoomId, UserId, News);
+                var rtmp_result = await ENV.BliveAPI.StartLive(RoomId, Title, GameAreaID);
+                if (news_result && rtmp_result != null && !string.IsNullOrEmpty(rtmp_result.ServerUrl))
                 {
-                    var news_result = await ENV.BliveAPI.UpdateLiveNews(RoomId, UserId, News);
-                    var rtmp_result = await ENV.BliveAPI.StartLive(RoomId, Title, GameAreaID);
-                    if (news_result && rtmp_result != null && !string.IsNullOrEmpty(rtmp_result.ServerUrl))
-                    {
-                        IsStart = true;
-                        StreamServerUrl = rtmp_result.ServerUrl;
-                        StreamServerKey = rtmp_result.Code;
-                        await ENV.WebSocket.SetStreamServiceSettings(rtmp_result.ServerUrl, rtmp_result.Code);
-                        await ENV.WebSocket.StartStream();
-                        return string.Empty;
-                    }
-                    else
-                    {
-                        return "获取推流地址失败, 可能网络问题或者当前分区不支持推流码获取";
-                    }
+                    IsStart = true;
+                    StreamServerUrl = rtmp_result.ServerUrl;
+                    StreamServerKey = rtmp_result.Code;
+                    await ENV.WebSocket.SetStreamServiceSettings(rtmp_result.ServerUrl, rtmp_result.Code);
+                    await ENV.WebSocket.StartStream();
+                    return string.Empty;
                 }
                 else
                 {
-                    return "请选择直播分区";
+                    return "获取推流地址失败, 可能网络问题或者当前分区不支持推流码获取";
                 }
             }
             else
             {
-                var res = await ENV.BliveAPI.StopLive(RoomId);
-                if (res != null && res.Change == 1)
-                {
-                    IsStart = false;
-                    await ENV.WebSocket.StopStream();
-                }
-                return string.Empty;
+                return "请选择直播分区";
             }
+        }
+
+        public async Task<string> StopStreamLive()
+        {
+            var res = await ENV.BliveAPI.StopLive(RoomId);
+            if (res != null && res.Change == 1)
+            {
+                IsStart = false;
+                await ENV.WebSocket.StopStream();
+            }
+            return string.Empty;
         }
 
         public async Task<string> SaveSetting()
