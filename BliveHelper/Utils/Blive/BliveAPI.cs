@@ -186,7 +186,7 @@ namespace BliveHelper.Utils.Blive
         /// <returns></returns>
         public async Task<BliveInfoData> GetInfo()
         {
-            var response = await Get<BliveInfoData>($"{BLIVE_API_URL}/xlive/app-blink/v1/room/GetInfo?platform=android_link");
+            var response = await Get<BliveInfoData>($"{BLIVE_API_URL}/xlive/app-blink/v1/room/GetInfo?platform=pc_link");
             return response?.Data;
         }
 

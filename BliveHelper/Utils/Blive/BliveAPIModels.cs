@@ -173,7 +173,7 @@ namespace BliveHelper.Utils.Blive
         [JsonProperty("room_id")]
         public int RoomId { get; set; }
         [JsonProperty("platform")]
-        public string Platform { get; set; } = "android_link";
+        public string Platform { get; set; } = "pc_link";
     }
 
     public class BliveTitleRequestData : BliveCsrf
@@ -181,7 +181,7 @@ namespace BliveHelper.Utils.Blive
         [JsonProperty("room_id")]
         public int RoomId { get; set; }
         [JsonProperty("platform")]
-        public string Platform { get; set; } = "android_link";
+        public string Platform { get; set; } = "pc_link";
         [JsonProperty("title", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Title { get; set; } = string.Empty;
         [JsonProperty("area_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
