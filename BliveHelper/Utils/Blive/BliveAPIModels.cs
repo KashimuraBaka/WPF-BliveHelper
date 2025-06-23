@@ -161,7 +161,7 @@ namespace BliveHelper.Utils.Blive
         [JsonProperty("room_id")]
         public int RoomId { get; set; }
         [JsonProperty("platform")]
-        public string Platform { get; set; } = "android_link";
+        public string Platform { get; set; } = "pc_link";
         [JsonProperty("area_v2")]
         public int AreaV2 { get; set; }
         [JsonProperty("backup_stream")]
