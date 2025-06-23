@@ -13,4 +13,4 @@
 - 开播后 OBS Studio 自动设置推流地址 和 开始直播, 并且在停止推流时自动停止直播
 
 # 软件截图
-![这是图片](/Assets/screenshots/screenshot_01.png)
+![Image](/Assets/screenshots/screenshot_01.png)
