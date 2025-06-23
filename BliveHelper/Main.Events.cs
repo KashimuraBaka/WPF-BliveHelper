@@ -18,6 +18,7 @@ namespace BliveHelper
             }
             // 初始化服务
             await ENV.InitServices();
+            Log("配置加载完毕!");
             // 如果启用服务则自动启用
             if (ENV.Config.PluginEnabled)
             {
@@ -47,14 +48,22 @@ namespace BliveHelper
             ENV.Config.PluginEnabled = false;
         }
 
-        private void OnConnected(object sender, ConnectedEvtArgs e)
+        private async void OnConnected(object sender, ConnectedEvtArgs e)
         {
             IsConnected = true;
+            if (ENV.Config.WebSocket.AutoStream && !ENV.BliveInfo.IsStart)
+            {
+                await ENV.BliveInfo.StartStreamLive();
+            }
         }
 
-        private void OnDisconnected(object sender, DisconnectEvtArgs e)
+        private async void OnDisconnected(object sender, DisconnectEvtArgs e)
         {
             IsConnected = false;
+            if (ENV.Config.WebSocket.AutoStream && ENV.BliveInfo.IsStart)
+            {
+                await ENV.BliveInfo.StopStreamLive();
+            }
         }
 
         private void OnReceivedDanmaku(object sender, ReceivedDanmakuArgs e)
