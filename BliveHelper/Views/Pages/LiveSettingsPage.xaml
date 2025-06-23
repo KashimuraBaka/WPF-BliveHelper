@@ -34,7 +34,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <DockPanel>
+                <DockPanel Margin="0,2,0,10">
                     <TextBlock Text="直播间状态" />
                     <TextBlock Width="Auto">
                         <TextBlock.Style>
