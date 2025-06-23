@@ -86,7 +86,7 @@ namespace BliveHelper.Views.Windows
         public string WebSocketVersionText => WebSocket.IsOpen ? $"[OBS版本: {WebSocket.ObsStudioVerison}, 插件版本: {WebSocket.ObsPluginVersion}]" : string.Empty;
         public string WebSocketStateText => $"{WebSocketConnectText} {WebSocketVersionText}";
         public string UserName => string.IsNullOrEmpty(Info.UserName) ? "未登录" : Info.UserName;
-        public string RoomIdText => Info.IsStart ? $"{Info.RoomId} [正在直播]" : (Info.RoomId > 0 ? Info.RoomId.ToString() : "未登录");
+        public string RoomIdText => Info.RoomId > 0 ? Info.RoomId.ToString() : "未登录";
 
         public MainWindow() : base()
         {
