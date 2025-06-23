@@ -35,6 +35,23 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
                 <DockPanel>
+                    <TextBlock Text="直播间状态" />
+                    <TextBlock Width="Auto">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Text" Value="未开播" />
+                                <Setter Property="Foreground" Value="#61666D" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Blive.IsStart}" Value="True">
+                                        <Setter Property="Text" Value="正在直播" />
+                                        <Setter Property="Foreground" Value="#FF8CB0" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </DockPanel>
+                <DockPanel>
                     <TextBlock Text="直播间标题" />
                     <TextBox Text="{Binding Blive.Title}" />
                 </DockPanel>
