@@ -6,6 +6,8 @@ namespace BliveHelper
 {
     public partial class Main
     {
+        public bool IsConnected { get; set; }
+
         public override async void Inited()
         {
             Log("加载配置中...");
@@ -30,7 +32,7 @@ namespace BliveHelper
 
         public override void Admin()
         {
-            AdminWindow.ShowDialog();
+            AdminWindow.Show();
         }
 
         public override void Start()
@@ -47,10 +49,12 @@ namespace BliveHelper
 
         private void OnConnected(object sender, ConnectedEvtArgs e)
         {
+            IsConnected = true;
         }
 
         private void OnDisconnected(object sender, DisconnectEvtArgs e)
         {
+            IsConnected = false;
         }
 
         private void OnReceivedDanmaku(object sender, ReceivedDanmakuArgs e)
