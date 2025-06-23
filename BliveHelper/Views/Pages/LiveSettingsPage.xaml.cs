@@ -3,6 +3,7 @@ using BliveHelper.Utils.Blive;
 using BliveHelper.Utils.Structs;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace BliveHelper.Views.Pages
@@ -21,11 +22,10 @@ namespace BliveHelper.Views.Pages
             set => SetProperty(ref startEnable, value);
         }
 
-        public string ActionButtonText => ENV.Config.WebSocket.AutoStream ? $"已开启自动开播 ({AutoStreamStatusText})" : ManualStreamStatusText;
-        public string ManualStreamStatusText => Blive.IsStart ? "停止直播" : "开始直播";
-        public string AutoStreamStatusText => Blive.IsStart ? "正在直播" : "未开播";
+        public string ActionButtonText => ENV.Config.WebSocket.AutoStream ? "已开启自动开播" : (Blive.IsStart ? "停止直播" : "开始直播");
         public ICommand ChangedSettingCommand => new RelayCommand(async () => MessageBox.Show(await Blive.SaveSetting()));
         public ICommand ActionLiveCommand => new RelayCommand(ActionLive);
+        public ICommand SetBliveOpCodeCommand => new RelayCommand(SetBliveOpCode);
 
         public LiveSettingsPage() : base()
         {
@@ -60,6 +60,16 @@ namespace BliveHelper.Views.Pages
                 MessageBox.Show(result);
             }
             StartEnable = true;
+        }
+
+        private void SetBliveOpCode()
+        {
+            var window = ENV.AppWindow;
+            if (window != null && window.FindName("OPCode") is PasswordBox opCodeTextBox)
+            {
+                opCodeTextBox.Password = Blive.BroadcastCode;
+                MessageBox.Show("设置身份码完成!");
+            }
         }
     }
 }
