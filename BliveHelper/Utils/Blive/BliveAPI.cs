@@ -73,7 +73,7 @@ namespace BliveHelper.Utils.Blive
             };
             //Client.DefaultRequestHeaders.Add("Origin", "https://link.bilibili.com");
             //Client.DefaultRequestHeaders.Referrer = new Uri("https://link.bilibili.com/p/center/index");
-            Client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36");
+            Client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0");
         }
 
         private async Task<BliveResponse<T>> Get<T>(string url)
@@ -116,36 +116,6 @@ namespace BliveHelper.Utils.Blive
         {
             var response = await Get<BliveQRCodeResponse>("https://passport.bilibili.com/x/passport-login/web/qrcode/generate");
             return response?.Data;
-        }
-
-        /// <summary>
-        /// 获取二维码图像
-        /// </summary>
-        /// <returns></returns>
-        public async Task<BliveQRCodeImage> GetLoginQRCodeImage()
-        {
-            var qrCodeResponse = await GetLoginQRCode();
-            if (qrCodeResponse != null)
-            {
-                using (var qrGenerator = new QRCodeGenerator())
-                {
-                    var qrCodeData = qrGenerator.CreateQrCode(qrCodeResponse.Url, QRCodeGenerator.ECCLevel.Q);
-                    var bitmapByteQRCode = new BitmapByteQRCode(qrCodeData);
-                    var qrCodeBytes = bitmapByteQRCode.GetGraphic(20);
-                    using (var ms = new MemoryStream(qrCodeBytes))
-                    {
-                        var bitmapImage = new BitmapImage();
-                        bitmapImage.BeginInit();
-                        bitmapImage.StreamSource = ms;
-                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmapImage.EndInit();
-                        bitmapImage.Freeze();
-
-                        return new BliveQRCodeImage(bitmapImage, qrCodeResponse.QRCodeKey);
-                    }
-                }
-            }
-            return default;
         }
 
         /// <summary>
@@ -238,14 +208,14 @@ namespace BliveHelper.Utils.Blive
         /// <param name="name"></param>
         /// <param name="areaId"></param>
         /// <returns></returns>
-        public async Task<BliveRtmpInfo> StartLive(int roomId, string name, int areaId)
+        public async Task<BliveResponse<BliveStartResponse>> StartLive(int roomId, string name, int areaId)
         {
             // 设置直播间标题
             await SetLiveInfo(roomId, name, areaId);
             // 开始直播间
             var requestData = new BliveStartRequestData() { RoomId = roomId, AreaV2 = areaId };
             var response = await PostFormUrlEncoded<BliveStartResponse>($"{BLIVE_API_URL}/room/v1/Room/startLive", requestData);
-            return response?.Data?.Rtmp;
+            return response;
         }
 
         /// <summary>
