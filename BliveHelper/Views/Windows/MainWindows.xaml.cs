@@ -1,6 +1,7 @@
 ﻿using BliveHelper.Utils;
 using BliveHelper.Utils.Blive;
 using BliveHelper.Utils.Obs;
+using BliveHelper.Utils.QRCoder;
 using BliveHelper.Utils.Structs;
 using BliveHelper.Views.Components;
 using BliveHelper.Views.Pages;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -27,15 +29,18 @@ namespace BliveHelper.Views.Windows
         public BliveInfo Info => ENV.BliveInfo;
 
         // 扫码
+        private string QrCodeUrl { get; set; } = string.Empty;
         private bool scanQR;
         public bool ScanQR
         {
             get => scanQR;
-            set
-            {
-                SetProperty(ref scanQR, value);
-                NotifyPropertyChanged(nameof(ShowSignOutButton));
-            }
+            set => SetProperty(ref scanQR, value);
+        }
+        private bool showCloseScanQR;
+        public bool ShowCloseScanQR
+        {
+            get => showCloseScanQR;
+            set => SetProperty(ref showCloseScanQR, value);
         }
         private BitmapImage qrCodeImage;
         public BitmapImage QrCodeImage
@@ -69,6 +74,13 @@ namespace BliveHelper.Views.Windows
             get => selectedPage;
             set => SetProperty(ref selectedPage, value);
         }
+        // 显示注销按钮
+        private bool showSignOutButton = true;
+        public bool ShowSignOutButton
+        {
+            get => showSignOutButton;
+            set => SetProperty(ref showSignOutButton, value);
+        }
 
         public ObservableCollection<TabItemModel> Pages { get; } = new ObservableCollection<TabItemModel>();
 
@@ -79,9 +91,9 @@ namespace BliveHelper.Views.Windows
         public ICommand CopyUserIdCommand => new RelayCommand(CopyUserId);
         public ICommand OpenLivePageCommand => new RelayCommand(OpenLivePage);
         public ICommand CopyLiveRoomdIdCommand => new RelayCommand(CopyLiveRoomdId);
+        public ICommand CloseScanQRCommand => new RelayCommand(() => ScanQR = false);
         public ICommand CloseCommand => new RelayCommand(Close);
 
-        public bool ShowSignOutButton => !ScanQR;
         public string WebSocketConnectText => WebSocket.IsOpen ? "已连接" : "已断开";
         public string WebSocketVersionText => WebSocket.IsOpen ? $"[OBS版本: {WebSocket.ObsStudioVerison}, 插件版本: {WebSocket.ObsPluginVersion}]" : string.Empty;
         public string WebSocketStateText => $"{WebSocketConnectText} {WebSocketVersionText}";
@@ -110,7 +122,7 @@ namespace BliveHelper.Views.Windows
             // 如果没有 Cookies 则显示二维码扫码登录
             if (ENV.Config.Cookies.Count == 0)
             {
-                RefreshesQRCode();
+                RefreshLoginQR();
             }
         }
 
@@ -124,7 +136,7 @@ namespace BliveHelper.Views.Windows
         private void OnQRImageMouseDown(object sender, MouseButtonEventArgs e)
         {
             // 刷新二维码
-            RefreshesQRCode();
+            RefreshLoginQR();
         }
 
         private void BliveInfo_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -157,13 +169,14 @@ namespace BliveHelper.Views.Windows
                 ENV.BliveAPI.Cookies = new Dictionary<string, string>();
                 Info.IsStart = false;
                 ScanQR = true;
+                ShowSignOutButton = false;
                 Info.UserName = string.Empty;
                 Info.RoomId = default;
                 Info.Title = string.Empty;
                 Info.SelectedArea = string.Empty;
                 Info.SelectedGame = string.Empty;
                 // 生成二维码
-                RefreshesQRCode();
+                RefreshLoginQR();
             }
         }
 
@@ -197,31 +210,57 @@ namespace BliveHelper.Views.Windows
             Clipboard.SetDataObject(Info.RoomId.ToString());
         }
 
-        private async void RefreshesQRCode()
+        public void ShowQrCode(string url, string message = "", bool showClose = false)
         {
             // 显示图形二维码
             ScanQR = true;
-            // 获取二维码
-            var imageData = await ENV.BliveAPI.GetLoginQRCodeImage();
-            if (imageData != null)
+            QrCodeUrl = url;
+            ShowCloseScanQR = showClose;
+            QrCodeMessage = message;
+            // 将网页地址转为二维码
+            using (var qrGenerator = new QRCodeGenerator())
             {
-                QrCodeImage = imageData.Image;
-                // 循环检查二维码状态
-                while (imageData.Image == QrCodeImage)
+                var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+                var bitmapByteQRCode = new BitmapByteQRCode(qrCodeData);
+                var qrCodeBytes = bitmapByteQRCode.GetGraphic(20);
+                using (var ms = new MemoryStream(qrCodeBytes))
                 {
-                    var state = await ENV.BliveAPI.PollLoginQRCode(imageData.Key);
+                    var bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = ms;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+                    bitmapImage.Freeze();
+                    QrCodeImage = bitmapImage;
+                }
+            }
+        }
+
+        public async void RefreshLoginQR()
+        {
+            // 获取二维码
+            var qrResponse = await ENV.BliveAPI.GetLoginQRCode();
+            if (qrResponse != null)
+            {
+                ShowQrCode(qrResponse.Url);
+                ShowSignOutButton = false;
+                // 循环检查二维码扫描状态
+                while (qrResponse.Url == QrCodeUrl)
+                {
+                    var state = await ENV.BliveAPI.PollLoginQRCode(qrResponse.QRCodeKey);
                     if (state != null)
                     {
                         if (state.Code == 0)
                         {
                             ScanQR = false;
+                            ShowSignOutButton = true;
                             ENV.Config.Cookies = ENV.BliveAPI.Cookies;
                             break;
                         }
                         else if (state.Code == 86038)
                         {
                             QrCodeMessage = "二维码失效, 重新生成中";
-                            RefreshesQRCode();
+                            RefreshLoginQR();
                             break;
                         }
                         else if (state.Code == 86090)

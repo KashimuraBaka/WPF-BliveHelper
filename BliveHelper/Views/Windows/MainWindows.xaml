@@ -151,10 +151,20 @@
                     <TextBlock
                         Grid.Row="1"
                         Margin="0,5,0,0"
+                        HorizontalAlignment="Center"
                         FontSize="18"
                         Foreground="White"
                         Text="{Binding QrCodeMessage}"
                         TextAlignment="Center" />
+                    <Button
+                        Grid.RowSpan="2"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Command="{Binding CloseScanQRCommand}"
+                        Foreground="White"
+                        Style="{StaticResource IconButton}"
+                        Tag="Close"
+                        Visibility="{Binding ShowCloseScanQR, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Grid>
             </Border>
         </Grid>
