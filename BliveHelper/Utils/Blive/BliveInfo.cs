@@ -90,7 +90,7 @@ namespace BliveHelper.Utils.Blive
 
         public int GameAreaID => LiveAreas.FirstOrDefault(x => x.Name == SelectedArea)?.List.FirstOrDefault(x => x.Name == SelectedGame)?.Id ?? 0;
         public ObservableCollection<BliveArea> LiveAreas { get; } = new ObservableCollection<BliveArea>();
-        public IEnumerable<BliveGameAreaItem> LiveGames => LiveAreas.FirstOrDefault(x => x.Name == SelectedArea)?.List;
+        public IEnumerable<BliveGameAreaItem> LiveGames => LiveAreas.FirstOrDefault(x => x.Name == SelectedArea)?.List ?? Enumerable.Empty<BliveGameAreaItem>();
 
         public event EventHandler OnInfoRefreshed;
 
@@ -159,18 +159,27 @@ namespace BliveHelper.Utils.Blive
             {
                 var news_result = await ENV.BliveAPI.UpdateLiveNews(RoomId, UserId, News);
                 var rtmp_result = await ENV.BliveAPI.StartLive(RoomId, Title, GameAreaID);
-                if (news_result && rtmp_result != null && !string.IsNullOrEmpty(rtmp_result.ServerUrl))
+                if (news_result && rtmp_result != null && !string.IsNullOrEmpty(rtmp_result.Data.Rtmp.ServerUrl))
                 {
                     IsStart = true;
-                    StreamServerUrl = rtmp_result.ServerUrl;
-                    StreamServerKey = rtmp_result.Code;
-                    await ENV.WebSocket.SetStreamServiceSettings(rtmp_result.ServerUrl, rtmp_result.Code);
+                    StreamServerUrl = rtmp_result.Data.Rtmp.ServerUrl;
+                    StreamServerKey = rtmp_result.Data.Rtmp.Code;
+                    await ENV.WebSocket.SetStreamServiceSettings(StreamServerUrl, StreamServerKey);
                     await ENV.WebSocket.StartStream();
+                    return string.Empty;
+                }
+                else if (rtmp_result.Code == 60024)
+                {
+                    ENV.Plugin.AdminWindow.ShowQrCode(
+                        rtmp_result.Data.QRCode,
+                        "当前分区需要进行人脸认证, 请通过手机客户端扫描进行操作\n(完成操作后可关闭当前二维码)",
+                        showClose: true
+                    );
                     return string.Empty;
                 }
                 else
                 {
-                    return "获取推流地址失败, 可能网络问题或者当前分区不支持推流码获取";
+                    return $"获取推流地址失败, 具体错误:\n{rtmp_result.Message}";
                 }
             }
             else

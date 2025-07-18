@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Windows.Media.Imaging;
 
 namespace BliveHelper.Utils.Blive
 {
@@ -10,17 +9,6 @@ namespace BliveHelper.Utils.Blive
         NotLive = 0,
         Live,
         Loop
-    }
-
-    public class BliveQRCodeImage
-    {
-        public BitmapImage Image { get; set; }
-        public string Key { get; set; }
-        public BliveQRCodeImage(BitmapImage image, string key)
-        {
-            Image = image;
-            Key = key;
-        }
     }
 
     public struct SetLiveInfoResult
@@ -214,6 +202,8 @@ namespace BliveHelper.Utils.Blive
         public string Status { get; set; } = string.Empty;
         [JsonProperty("rtmp")]
         public BliveRtmpInfo Rtmp { get; set; } = new BliveRtmpInfo();
+        [JsonProperty("qr")]
+        public string QRCode { get; set; } = string.Empty;
     }
 
     public class BliveStopResponse
